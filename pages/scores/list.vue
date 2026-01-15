@@ -3,15 +3,27 @@ import Routes from '@/constants/Routes';
 import LocalStorageKeys from '@/constants/LocalStorageKeys';
 import { useProcessLocalStorage } from '@/composables/useProcessLocalStorage';
 import { useEvaluationStats } from '@/composables/useEvaluationStats';
+import DatabaseNames from '@/constants/DatabaseNames';
+import { useEvalDataStore } from '@/stores/evaluations';
+import type IFinalEvaluation from '@/interfaces/IFinalEvaluation';
 
 useSeoMeta({
   title: 'My Evaluations - PenPlus NCD Monitoring',
   description: 'View and manage all your healthcare provider evaluation sessions'
 })
 
-// Fetch evaluations from localStorage
-const { retrieve } = useProcessLocalStorage();
-const evaluations = ref(retrieve(LocalStorageKeys.EVALUATION_SCORES) ?? []);
+// Fetch evaluations from database
+const { fetchEvaluationScores } = useEvalDataStore()
+const evaluations = ref<IFinalEvaluation[]>([])
+
+onMounted(async () => {
+  try {
+    evaluations.value = await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS) || []
+  } catch (error) {
+    console.error('Error fetching evaluations:', error)
+    evaluations.value = []
+  }
+})
 
 // Calculate stats using useEvaluationStats
 const { overallMeanScore, completedEvaluations } = useEvaluationStats(evaluations.value);
@@ -19,30 +31,86 @@ const { overallMeanScore, completedEvaluations } = useEvaluationStats(evaluation
 // Compute stats
 const stats = computed(() => {
   const total = evaluations.value.length;
-  const completed = completedEvaluations.length;
-  const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+  
+  // Calculate completion rate as percentage of sessions completed
+  let totalSessions = 0;
+  let completedSessions = 0;
+  
+  evaluations.value.forEach(evaluation => {
+    Object.values(evaluation.sessions || {}).forEach(session => {
+      totalSessions++;
+      if (session && session.evalItemScores && session.evalItemScores.length > 0) {
+        completedSessions++;
+      }
+    });
+  });
+  
+  const completionRate = totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0;
   const avgScore = overallMeanScore.value ? `${overallMeanScore.value}%` : '0%';
 
-  // For this month, assume current month, but since no date, use a placeholder
-  const thisMonth = 8; // Placeholder, would need date filtering
+  // Calculate this month's stats
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+  
+  const thisMonthEvaluations = evaluations.value.filter(evaluation => {
+    return Object.values(evaluation.sessions || {}).some(session => {
+      if (session && session.evalDate) {
+        const sessionDate = new Date(session.evalDate);
+        return sessionDate.getMonth() === thisMonth && sessionDate.getFullYear() === thisYear;
+      }
+      return false;
+    });
+  });
+  
+  // Calculate last month's stats
+  const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+  const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear;
+  
+  const lastMonthEvaluations = evaluations.value.filter(evaluation => {
+    return Object.values(evaluation.sessions || {}).some(session => {
+      if (session && session.evalDate) {
+        const sessionDate = new Date(session.evalDate);
+        return sessionDate.getMonth() === lastMonth && sessionDate.getFullYear() === lastMonthYear;
+      }
+      return false;
+    });
+  });
+  
+  // Calculate percentage changes
+  const totalChange = lastMonthEvaluations.length > 0 
+    ? Math.round(((total - lastMonthEvaluations.length) / lastMonthEvaluations.length) * 100)
+    : 0;
+    
+  const thisMonthCount = thisMonthEvaluations.length;
+  const lastMonthCount = lastMonthEvaluations.length;
+  const thisMonthChange = lastMonthCount > 0 
+    ? Math.round(((thisMonthCount - lastMonthCount) / lastMonthCount) * 100)
+    : 0;
+    
+  // For completion rate change, we'd need historical data - using a placeholder for now
+  const completionRateChange = '+2%'; // Placeholder - would need historical completion rates
+  
+  // For avg score change, we'd need historical scores - using a placeholder for now  
+  const avgScoreChange = '+3%'; // Placeholder - would need historical average scores
 
   return [
-    { label: 'Total Evaluations', value: total.toString(), icon: 'i-heroicons-clipboard-document-list', color: 'blue', change: '+12%' },
-    { label: 'This Month', value: thisMonth.toString(), icon: 'i-heroicons-calendar', color: 'green', change: '+5%' },
-    { label: 'Completion Rate', value: `${completionRate}%`, icon: 'i-heroicons-check-badge', color: 'emerald', change: '+2%' },
-    { label: 'Avg. Score', value: avgScore, icon: 'i-heroicons-chart-bar', color: 'purple', change: '+3%' }
+    { label: 'Total Evaluations', value: total.toString(), icon: 'i-heroicons-clipboard-document-list', color: 'blue', change: `${totalChange >= 0 ? '+' : ''}${totalChange}%` },
+    { label: 'This Month', value: thisMonthCount.toString(), icon: 'i-heroicons-calendar', color: 'green', change: `${thisMonthChange >= 0 ? '+' : ''}${thisMonthChange}%` },
+    { label: 'Completion Rate', value: `${completionRate}%`, icon: 'i-heroicons-check-badge', color: 'emerald', change: completionRateChange },
+    { label: 'Avg. Score', value: avgScore, icon: 'i-heroicons-chart-bar', color: 'purple', change: avgScoreChange }
   ];
 });
 
 // Generate recent activity from evaluations
 const recentActivity = computed(() => {
   const recent = evaluations.value.slice(-3).reverse(); // Last 3, reversed for latest first
-  return recent.map((evaluation: any, index: number) => {
+  return recent.map((evaluation: IFinalEvaluation, index: number) => {
     const timeAgo = ['2 hours ago', '1 day ago', '2 days ago'][index] || 'Recently';
     const type = ['success', 'info', 'warning'][index % 3];
     return {
       action: 'Evaluation completed',
-      provider: evaluation.mentee?.name || 'Unknown Provider',
+      provider: evaluation.mentee ? `${evaluation.mentee.firstname} ${evaluation.mentee.lastname}` : 'Unknown Provider',
       facility: evaluation.mentee?.facility || 'Unknown Facility',
       time: timeAgo,
       type
@@ -230,6 +298,7 @@ const recentActivity = computed(() => {
                 variant="outline"
                 label="Generate Report"
                 class="w-full justify-start"
+                :to="Routes.GENERATE_REPORT.path"
               />
               <UButton 
                 icon="i-heroicons-user-group" 
@@ -237,6 +306,7 @@ const recentActivity = computed(() => {
                 variant="outline"
                 label="Manage Providers"
                 class="w-full justify-start"
+                :to="Routes.MANAGE_PROVIDERS.path"
               />
               <UButton 
                 icon="i-heroicons-cog-6-tooth" 
@@ -244,6 +314,7 @@ const recentActivity = computed(() => {
                 variant="outline"
                 label="Settings"
                 class="w-full justify-start"
+                :to="Routes.SETTINGS.path"
               />
             </div>
           </UCard>

@@ -10,7 +10,7 @@ const goBack = () => {
 }
 
 const startEvaluation = () => {
-  navigateTo(Routes.COMPLETED_EVALUATIONS.path);
+  navigateTo(Routes.EVALUATIONS.path);
 }
 
 const syncData = () => {

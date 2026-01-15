@@ -35,6 +35,7 @@ const gotoFacilities = () => {
   <div>
     <!-- User Info and Logout Button - Fixed Position -->
     <div class="fixed top-4 right-4 z-50 flex items-center space-x-3">
+      <SharedOnlineStatus />
       <div class="bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-lg border border-gray-200">
         <div class="flex items-center space-x-2">
           <UIcon name="i-heroicons-user" class="w-4 h-4 text-gray-600" />

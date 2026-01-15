@@ -6,6 +6,8 @@ import LocalStorageKeys from "@/constants/LocalStorageKeys";
 import { useStorage } from '@vueuse/core';
 import { useEvalDataStore } from "@/stores/evaluations";
 import { useMostRecentToolItemData } from "@/composables/useMostRecentToolItemData";
+import EvaluationItem from './EvaluationItem.vue';
+import EvaluationSummary from './EvaluationSummary.vue';
 
 interface EvalItemScore {
   name: string;
@@ -16,19 +18,41 @@ const props = defineProps<{
   menteeData: any,
   selectedTool: string | string[],
   evaluationItems: any,
-  cutOff?: number
+  cutOff?: number | string
 }>();
 
-// Form state
-const state = reactive({
+// Create initial state from props
+const initialState = computed(() => ({
   evalDate: Date.now(),
   evalItemScores: props.evaluationItems?.map((evalItem: any) => ({
     name: evalItem.number,
     score: undefined,
   })) || [] as EvalItemScore[]
-});
+}));
 
-const localStorageState = useStorage(LocalStorageKeys.SCORES, state);
+// Form state - use localStorage but sync with props when they change
+const localStorageState = useStorage(LocalStorageKeys.SCORES, initialState.value);
+
+// Watch for prop changes to update localStorageState
+watch(() => props.evaluationItems, (newItems) => {
+  if (newItems && newItems.length > 0) {
+    // Preserve existing scores when available
+    const updatedScores = newItems.map((evalItem: any) => {
+      const existingScore = localStorageState.value.evalItemScores?.find(
+        (s: EvalItemScore) => s.name === evalItem.number
+      );
+      return {
+        name: evalItem.number,
+        score: existingScore?.score
+      };
+    });
+    
+    localStorageState.value = {
+      ...localStorageState.value,
+      evalItemScores: updatedScores
+    };
+  }
+}, { immediate: true });
 
 // Fetch previous evaluations
 const useEvaluations = useEvalDataStore();
@@ -37,15 +61,33 @@ const mostRecentScores = ref<any[]>([]);
 
 onMounted(async () => {
   if (props.menteeData?._id) {
-    menteeEvals.value = await useEvaluations.fetchMenteeEvals(props.menteeData._id);
-    const toolEvals = menteeEvals.value.filter((t: { tool: string | string[]; }) => t.tool == props.selectedTool);
-    mostRecentScores.value = useMostRecentToolItemData(toolEvals);
+    try {
+      menteeEvals.value = await useEvaluations.fetchMenteeEvals(props.menteeData._id) || [];
+      const toolEvals = menteeEvals.value.filter((t: { tool: string | string[]; }) => t.tool == props.selectedTool) || [];
+      mostRecentScores.value = useMostRecentToolItemData(toolEvals) || [];
+    } catch (error) {
+      console.error('Error fetching mentee evaluations:', error);
+      menteeEvals.value = [];
+      mostRecentScores.value = [];
+    }
   }
 });
 
-const getMostRecentScore = (itemNum: string): any => {
-  return mostRecentScores.value?.find((r: any) => r.name == itemNum);
-};
+// FIXED: Use localStorageState for all computed properties
+const exemplaryCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: EvalItemScore) => s.score === 3).length || 0;
+});
+
+const competentCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: EvalItemScore) => s.score === 2).length || 0;
+});
+
+const pendingCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: EvalItemScore) => s.score === undefined).length || 0;
+});
+
+const prevExemplaryCount = computed(() => mostRecentScores.value.filter(s => s.score === 3).length);
+const prevCompetentCount = computed(() => mostRecentScores.value.filter(s => s.score === 2).length);
 
 // Form schema
 const schema = yup.object({
@@ -61,20 +103,29 @@ const scoringOptions = [
   { label: '3 - Exemplary', value: 3, color: 'green' }
 ];
 
-// Helper to get score color
-const getScoreColor = (score: number) => {
-  switch (score) {
-    case 0: return 'red';
-    case 1: return 'orange';
-    case 2: return 'blue';
-    case 3: return 'green';
-    default: return 'gray';
-  }
+// Helper methods
+const getMostRecentScore = (itemNumber: string) => {
+  return mostRecentScores.value.find(score => score.name === itemNumber);
+};
+
+const getScoreColor = (score: number): any => {
+  const option = scoringOptions.find(opt => opt.value === score);
+  return option ? option.color : 'gray';
+};
+
+// Helper to reset scores if needed
+const resetScores = () => {
+  localStorageState.value = {
+    evalDate: Date.now(),
+    evalItemScores: props.evaluationItems?.map((evalItem: any) => ({
+      name: evalItem.number,
+      score: undefined,
+    })) || [] as EvalItemScore[]
+  };
 };
 </script>
-
 <template>
-  <UForm :state="state" @submit="" class="space-y-6">
+  <UForm :state="localStorageState" @submit="" class="space-y-6">
     <!-- Evaluation Items -->
     <UCard class="shadow-lg border-0">
       <template #header>
@@ -92,24 +143,24 @@ const getScoreColor = (score: number) => {
       </template>
 
       <div class="space-y-6">
-        <div 
-          v-for="(item, index) in evaluationItems" 
+        <div
+          v-for="(item, index) in evaluationItems"
           :key="item.number"
           class="p-4 rounded-lg border transition-all duration-200 hover:shadow-md"
           :class="{
-            'bg-white border-gray-200': !props?.cutOff || index < props?.cutOff,
-            'bg-blue-50 border-blue-200': props?.cutOff && index >= props?.cutOff
+            'bg-white border-gray-200': props.cutOff == null || Number(index) < Number(props.cutOff),
+            'bg-blue-50 border-blue-200': props.cutOff != null && Number(index) >= Number(props.cutOff)
           }"
         >
           <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
             <!-- Item Content -->
             <div class="flex-1 space-y-3">
               <div class="flex items-start space-x-3">
-                <div 
+                <div
                   class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 font-semibold text-white text-sm"
                   :class="{
-                    'bg-orange-500': !props?.cutOff || index < props?.cutOff,
-                    'bg-pink-600': props?.cutOff && index >= props?.cutOff
+                    'bg-orange-500': props.cutOff == null || index < props.cutOff,
+                    'bg-pink-600': props.cutOff != null && index >= props.cutOff
                   }"
                 >
                   {{ item.number }}
@@ -120,8 +171,8 @@ const getScoreColor = (score: number) => {
                   </h4>
                   
                   <!-- Most Recent Previous Score -->
-                  <div 
-                    v-if="mostRecentScores && getMostRecentScore(item.number)"
+                  <div
+                    v-if="getMostRecentScore(item.number)"
                     class="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
                   >
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -298,69 +349,15 @@ const getScoreColor = (score: number) => {
       </template>
     </UCard>
 
-    <!-- Performance Summary -->
-    <UCard class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
-      <template #header>
-        <h4 class="font-semibold text-gray-900">Performance Overview</h4>
-      </template>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-        <div>
-          <div class="text-2xl font-bold text-blue-600">
-            {{ evaluationItems?.length || 0 }}
-          </div>
-          <div class="text-sm text-gray-600">Total Items</div>
-        </div>
-        <div>
-          <div class="text-2xl font-bold text-green-600">
-            {{ state.evalItemScores?.filter((s: EvalItemScore) => s.score === 3).length || 0 }}
-          </div>
-          <div class="text-sm text-gray-600">Exemplary</div>
-        </div>
-        <div>
-          <div class="text-2xl font-bold text-blue-600">
-            {{ state.evalItemScores?.filter((s: EvalItemScore) => s.score === 2).length || 0 }}
-          </div>
-          <div class="text-sm text-gray-600">Competent</div>
-        </div>
-        <div>
-          <div class="text-2xl font-bold text-orange-600">
-            {{ state.evalItemScores?.filter((s: EvalItemScore) => s.score === undefined).length || 0 }}
-          </div>
-          <div class="text-sm text-gray-600">Pending</div>
-        </div>
-      </div>
-      
-      <!-- Previous vs Current Comparison -->
-      <div v-if="mostRecentScores.length > 0" class="mt-4 pt-4 border-t border-gray-200">
-        <h5 class="font-medium text-gray-900 mb-2">Progress Since Last Evaluation</h5>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <div class="text-lg font-bold text-purple-600">
-              {{ mostRecentScores.filter(s => s.score === 3).length }}
-            </div>
-            <div class="text-xs text-gray-600">Prev. Exemplary</div>
-          </div>
-          <div>
-            <div class="text-lg font-bold text-blue-600">
-              {{ mostRecentScores.filter(s => s.score === 2).length }}
-            </div>
-            <div class="text-xs text-gray-600">Prev. Competent</div>
-          </div>
-          <div>
-            <div class="text-lg font-bold text-green-600">
-              {{ state.evalItemScores?.filter((s: EvalItemScore) => s.score === 3).length || 0 }}
-            </div>
-            <div class="text-xs text-gray-600">Current Exemplary</div>
-          </div>
-          <div>
-            <div class="text-lg font-bold text-blue-600">
-              {{ state.evalItemScores?.filter((s: EvalItemScore) => s.score === 2).length || 0 }}
-            </div>
-            <div class="text-xs text-gray-600">Current Competent</div>
-          </div>
-        </div>
-      </div>
-    </UCard>
+    <EvaluationSummary
+      :evaluation-items="evaluationItems"
+      :exemplary-count="exemplaryCount"
+      :competent-count="competentCount"
+      :pending-count="pendingCount"
+      :most-recent-scores="mostRecentScores"
+      :prev-exemplary-count="prevExemplaryCount"
+      :prev-competent-count="prevCompetentCount"
+    />
   </UForm>
 </template>
 

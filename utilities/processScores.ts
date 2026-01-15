@@ -44,10 +44,6 @@ const processScores = (tool: string|string[]) => {
         cardiacEval: tool==='echo'?cardiacEval:null
    }
 
-   console.log('evaluationSession', evaluationSession)
-   console.log('session', session)
-
-
     const sessions: ISession = {
         session_1: evaluationSession === 1?session:null,
         session_2: evaluationSession === 2?session:null,

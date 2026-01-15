@@ -23,7 +23,7 @@ const evalItems = (toolItem: string, index: number) => {
 <template>
     <SharedBorderedNavBar>
         <template #lead>
-            <NuxtLink :to="Routes.COMPLETED_EVALUATIONS.path">
+            <NuxtLink :to="Routes.EVALUATIONS.path">
                 <div class="pr-5 text-blue-500 cursor-pointer">
                     <UIcon name="i-heroicons-arrow-small-left" />
                 </div>

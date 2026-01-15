@@ -4,7 +4,7 @@ import type IEvalScore from '~/interfaces/IEvalScore';
 
 interface RecentScore {
   name: string;
-  score: string;
+  score: number;
   date: number;
   session: string;
   notes: string;
@@ -27,7 +27,7 @@ export const useMostRecentToolItemData = (evaluations: IFinalEvaluation[]): Rece
         session.evalItemScores.forEach((score: IEvalScore) => {
           allScores.push({
             name: score.name,
-            score: score.score,
+            score: Number(score.score),
             date: sessionDate,
             session: sessionKey.replace('session_', ''),
             notes: score.notes || '',

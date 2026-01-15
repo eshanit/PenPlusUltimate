@@ -1,14 +1,14 @@
 // useEvaluationStats.js
 import { computed } from 'vue';
 import type IScore from "@/interfaces/IScore";
-import type IFinalEvaluation from '~/interfaces/IFinalEvaluation';
+import type IFinalEvaluation from '@/interfaces/IFinalEvaluation';
 
 
 export function useEvaluationStats(evaluations :IScore[] | IFinalEvaluation[]) {
-  // Filter evaluations where all 3 sessions are completed
+  // Filter evaluations where at least one session has been completed (has evalItemScores)
   const completedEvaluations = evaluations.filter((evaluation) => {
     const sessions = evaluation.sessions;
-    return sessions.session_1 && sessions.session_2 && sessions.session_3 && sessions.session_4 && sessions.session_5;
+    return Object.values(sessions).some(session => session && session.evalItemScores && session.evalItemScores.length > 0);
   });
 
   const completed4Evals = evaluations.filter((evaluation) => {

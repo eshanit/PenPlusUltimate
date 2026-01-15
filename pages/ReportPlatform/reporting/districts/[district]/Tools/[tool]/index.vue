@@ -44,7 +44,7 @@ const scoreStatistics = useScoreSimpleStatistics(toolScoresList.value)
 <template>
     <SharedBorderedNavBar>
         <template #lead>
-            <!-- <NuxtLink :to="Routes.COMPLETED_EVALUATIONS.path"> -->
+            <!-- <NuxtLink :to="Routes.EVALUATIONS.path"> -->
             <div class="pr-5 text-blue-500 cursor-pointer" @click="goBack">
                 <UIcon name="i-heroicons-arrow-small-left" />
             </div>

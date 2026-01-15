@@ -130,7 +130,7 @@ const SCORE = {
 
 
 
-const COMPLETED_EVALUATIONS = {
+const EVALUATIONS = {
     path: '/scores/list',
     name: 'scores-list',
     title: 'Evaluation Scores'
@@ -211,6 +211,24 @@ const SYNCING = {
     title: 'Syncing'
 }
 
+const GENERATE_REPORT = {
+    path: '/ReportPlatform/generate-report',
+    name: 'ReportPlatform-generate-report',
+    title: 'Generate Report'
+}
+
+const MANAGE_PROVIDERS = {
+    path: '/ReportPlatform/manage-providers',
+    name: 'ReportPlatform-manage-providers',
+    title: 'Manage Providers'
+}
+
+const SETTINGS = {
+    path: '/settings',
+    name: 'settings',
+    title: 'Settings'
+}
+
 export default {
     INDEX,
     LOGIN,
@@ -227,7 +245,7 @@ export default {
     SCORE_SUBMIT_SUCCESS,
     CARDIAC_PRAC_EVALUATION,
     SCORE,
-    COMPLETED_EVALUATIONS,
+    EVALUATIONS,
     START_EVALUATION,
     ECHO_PRAC_EVALUATION,
     EVALUATION_ECHO_SUMMARY,
@@ -243,5 +261,8 @@ export default {
     TOOLS_REPORTING,
     REPORTING_FACILITY_STATUS_REPORT,
     MONITORING_PLATFORM,
-    SYNCING
+    SYNCING,
+    GENERATE_REPORT,
+    MANAGE_PROVIDERS,
+    SETTINGS
 }

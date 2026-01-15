@@ -1,9 +1,15 @@
 
 import DatabaseNames from "@/constants/DatabaseNames";
-const useSyncAll = () => {
-    useReplicateFromCouchDB(DatabaseNames.DISTRICTS)
-    useReplicateFromCouchDB(DatabaseNames.MENTEES)
-    useReplicateFromCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS)
-}
+import useSyncDB from "./useSyncDB";
 
-export default useSyncAll
+const useSyncAll = () => {
+    useSyncDB(DatabaseNames.DISTRICTS);
+    useSyncDB(DatabaseNames.MENTEES);
+    useSyncDB(DatabaseNames.COMPLETED_EVALUTATIONS);
+    useSyncDB(DatabaseNames.INCOMPLETE_EVALUATIONS);
+    useSyncDB(DatabaseNames.EVALUATIONS);
+    useSyncDB(DatabaseNames.USERS);
+    // Add others if needed
+};
+
+export default useSyncAll;

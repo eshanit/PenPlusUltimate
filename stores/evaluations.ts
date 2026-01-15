@@ -91,10 +91,7 @@ export const useEvalDataStore = defineStore("evaluations", () => {
 
     const scoreData = processScores(tool)
 
-    console.log('scoredata:', scoreData)
-
     const storeStatus = await dbEvals.put(scoreData).then((response: { ok: boolean }) => {
-      console.log("Create Score", response);
       useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
 
       if (response.ok) {
@@ -107,7 +104,7 @@ export const useEvalDataStore = defineStore("evaluations", () => {
       return response;
     })
       .catch((error: any) => {
-        console.log("Error storing Scores", error);
+        // Error storing Scores
       });
 
     return storeStatus
@@ -130,7 +127,6 @@ export const useEvalDataStore = defineStore("evaluations", () => {
     const sessionKey = `session_${currentSession}`;
     const echoData = tool === 'echo' ? processEchoScores() : scores;
 
-    console.log('scores', databaseScores);
     databaseScores.sessions[sessionKey] = echoData;
 
 
@@ -144,7 +140,7 @@ export const useEvalDataStore = defineStore("evaluations", () => {
       return response.ok;
 
     }).catch((error: Error) => {
-      console.log("Error creating New Session Scores", error);
+      // Error creating New Session Scores
 
       return error.message
     });
@@ -177,9 +173,6 @@ export const useEvalDataStore = defineStore("evaluations", () => {
   const fetchDistrictEvaluations = async (district: string): Promise<any> => {
 
     return await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS).then((response) => {
-
-
-      console.log(response)
 
       return response.filter(function (el: { mentee: any; }) {
         // return el.evaluator.searchIndex == user.searchIndex;

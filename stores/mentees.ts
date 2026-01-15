@@ -111,7 +111,7 @@ export const useMenteeStore = defineStore("mentees", () => {
         return response;
       })
       .catch((error: any) => {
-        console.log("Error creating Mentee", error);
+        // Error creating Mentee
       });
 
     return createStatus;
@@ -142,7 +142,7 @@ export const useMenteeStore = defineStore("mentees", () => {
       return response.ok;
 
     }).catch((error: Error) => {
-      console.log("Error creating Menteer", error);
+      // Error creating Mentee
       
       return error.message
     });
@@ -167,7 +167,6 @@ export const useMenteeStore = defineStore("mentees", () => {
   const deleteMentee = async (menteeID: string, menteeRev: string) => {
     return await db.remove(menteeID, menteeRev).then(async (resp) => {
       useReplicateToCouchDB(DatabaseNames.MENTEES);
-      console.log(resp);
       if (resp.ok === true) {
         await navigateTo(Routes.MENTEES);
       }

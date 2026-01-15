@@ -38,8 +38,6 @@ export const useAuthStore = defineStore("auth", () => {
                 terms: userRegData.terms,
             };
 
-            console.log('CreateUser:', CreateUserData);
-
             await db.put(CreateUserData);
             await navigateTo(Routes.INDEX);
 
@@ -47,7 +45,7 @@ export const useAuthStore = defineStore("auth", () => {
                 live: true,
                 retry: true,
             }).on("change", (change: any) => {
-                console.log("something changed", change);
+                // something changed
             });
 
             isRegistered.value = true;
@@ -102,7 +100,6 @@ export const useAuthStore = defineStore("auth", () => {
 
             return isValid;
         } catch (err) {
-            console.log(err);
             await navigateTo(Routes.INDEX);
             alert('Wrong Credentials. Please try again');
             return false;
