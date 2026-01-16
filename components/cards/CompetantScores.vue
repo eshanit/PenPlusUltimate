@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import ScoreCards from '../shared/ScoreCards.vue';
+import ScorePie from '../charts/Shared/Pie.vue';
 import { useScoreCount } from '@/composables/useScoreCount';
+
+console.log('CompetantScores component loaded');
 
 type ScoreCount = {
   "1": number;
@@ -15,6 +18,8 @@ const props = defineProps<{
     scoreCounts: ScoreCount,
     evaluation: any
 }>()
+
+console.log('CompetantScores props:', props);
 
 const countScores = useScoreCount(props.evaluation.sessions[`session_${props.sessionIndex}`].evalItemScores)
 
@@ -177,7 +182,7 @@ const activeView = computed(() => {
         <div class="flex justify-center">
           <div class="w-full max-w-md">
             <div v-if="showAll">
-              <ScorePie :tool="props.tool" :score-counts="props.scoreCounts" />
+              <ScorePie :pieData="props.scoreCounts" :title="`Score Distribution for ${props.tool.toUpperCase()}`" />
             </div>
             
             <div v-if="showOne" class="text-center">

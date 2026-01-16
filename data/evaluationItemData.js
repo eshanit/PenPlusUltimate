@@ -2,7 +2,7 @@ export default [
     {
         tool: 'diabetes',
         label: 'Type 1 or 2 Diabetes',
-        numItems: 13,
+        numItems: 20,
         evaluationItems: [
             {
                 slug: '1-diabetes-1',
@@ -403,7 +403,7 @@ export default [
     {
         tool: 'cardiac',
         label: 'Cardiac',
-        numItems: 8,
+        numItems: 10,
         evaluationItems: [
             {
                 slug: '2-cardiac-1',
@@ -677,7 +677,7 @@ export default [
     {
         tool: 'sickle',
         label: 'Sickle Cell Disease',
-        numItems: 12,
+        numItems: 16,
         evaluationItems: [
             {
                 slug: '2-Sickle-1',
@@ -1004,7 +1004,7 @@ export default [
     {
         tool: 'respiratory',
         label: 'Respiratory Diseases',
-        numItems: 9,
+        numItems: 12,
         evaluationItems: [
             {
                 slug: '4-resp-1',
@@ -1251,7 +1251,7 @@ export default [
     {
         tool: 'hypertension',
         label: 'Hypertension',
-        numItems: 9,
+        numItems: 10,
         evaluationItems: [
             {
                 slug: '5-hyper-1',
@@ -1457,7 +1457,7 @@ export default [
     {
         tool: 'epilepsy',
         label: 'Epilepsy',
-        numItems: 7,
+        numItems: 10,
         evaluationItems: [
             {
                 slug: '6-epilepsy-1',
@@ -1664,7 +1664,7 @@ export default [
     {
         tool: 'liver',
         label: 'Liver',
-        numItems: 8,
+        numItems: 9,
         evaluationItems: [
             {
                 slug: '7-liver-1',
@@ -1851,7 +1851,7 @@ export default [
     {
         tool: 'kidney',
         label: 'Kidney',
-        numItems: 8,
+        numItems: 9,
         evaluationItems: [
             {
                 slug: '8-kidney-1',
@@ -2037,7 +2037,7 @@ export default [
     {
         tool: 'Palliative-Care',
         label: 'Palliative Care',
-        numItems: 14,
+        numItems: 16,
         evaluationItems: [
             {
                 slug: '9-PC-1',

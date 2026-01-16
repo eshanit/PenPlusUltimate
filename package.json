@@ -12,6 +12,10 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@capacitor/android": "^8.0.1",
+    "@capacitor/core": "^8.0.1",
+    "@capacitor/ios": "^8.0.1",
+    "@capacitor/network": "^8.0.0",
     "@nuxt/image": "1.8.1",
     "@nuxt/ui": "2.19.2",
     "@pinia/nuxt": "0.8.0",
@@ -42,6 +46,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.0.1",
     "@nuxt/test-utils": "^3.19.1",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",

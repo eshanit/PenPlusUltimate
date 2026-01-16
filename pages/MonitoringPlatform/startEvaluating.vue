@@ -2,6 +2,23 @@
 import type ITools from '@/interfaces/ITools';
 import Routes from '@/constants/Routes';
 
+// Import all icons
+const iconMap: { [key: string]: string } = {
+  'dietology': new URL('@/public/icons/dietology.png', import.meta.url).href,
+  'cardiology': new URL('@/public/icons/cardiology.png', import.meta.url).href,
+  'heart': new URL('@/public/icons/heart.png', import.meta.url).href,
+  'endocrinology': new URL('@/public/icons/endocrinology.png', import.meta.url).href,
+  'lungs': new URL('@/public/icons/lungs.png', import.meta.url).href,
+  'pills': new URL('@/public/icons/pills.png', import.meta.url).href,
+  'patient': new URL('@/public/icons/patient.png', import.meta.url).href,
+  'liver': new URL('@/public/icons/liver.png', import.meta.url).href,
+  'kidneys': new URL('@/public/icons/kidneys.png', import.meta.url).href,
+};
+
+const getIconUrl = (svgPath: string) => {
+  return iconMap[svgPath] || '';
+};
+
 const formTools: Ref<Array<ITools>> = ref([]);
 
 const user = useUserDetails;
@@ -99,8 +116,8 @@ const nextStep = (tool: string) => {
                                     {{ form.label }}
                                 </div>
                                 <div>
-                                    <NuxtImg :src="`/icons/${form.svg_path}.png`" alt="Icon for {{ form.label }}"
-                                        class="icon-size" />
+                                    <img :src="getIconUrl(form.svg_path)" :alt="`Icon for ${form.label}`"
+                                        class="icon-size object-contain" />
                                 </div>
                             </div>
 

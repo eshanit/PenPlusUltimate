@@ -12,6 +12,7 @@ interface RecentScore {
 }
 
 export const useMostRecentToolItemData = (evaluations: IFinalEvaluation[]): RecentScore[] => {
+  console.log('useMostRecentToolItemData evaluations:', evaluations);
   if (!evaluations || evaluations.length === 0) {
     return [];
   }
@@ -20,9 +21,12 @@ export const useMostRecentToolItemData = (evaluations: IFinalEvaluation[]): Rece
 
   // Flatten all scores from all evaluations and sessions
   evaluations.forEach((evaluation) => {
+    console.log('evaluation.sessions:', evaluation.sessions);
     Object.entries(evaluation.sessions || {}).forEach(([sessionKey, session]: [string, any]) => {
+      console.log('sessionKey:', sessionKey, 'session:', session);
       if (session && session.evalItemScores) {
         const sessionDate = session.evalDate;
+        console.log('session.evalItemScores:', session.evalItemScores);
 
         session.evalItemScores.forEach((score: IEvalScore) => {
           allScores.push({
@@ -37,6 +41,7 @@ export const useMostRecentToolItemData = (evaluations: IFinalEvaluation[]): Rece
       }
     });
   });
+  console.log('allScores:', allScores);
 
   // Sort by date (most recent first)
   allScores.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

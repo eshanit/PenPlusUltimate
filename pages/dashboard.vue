@@ -3,6 +3,9 @@ import DatabaseNames from "@/constants/DatabaseNames";
 import { useEvalDataStore } from "@/stores/evaluations";
 import { useDashboardStats } from "@/composables/useDashboardStats";
 
+const toast = useToast();
+const isInitializing = ref(true);
+
 // Navigation functions
 const navigateToEvaluation = () => {
   navigateTo('/MonitoringPlatform/dashboard');
@@ -18,9 +21,22 @@ const evaluations = ref([])
 
 onMounted(async () => {
   try {
+    // Perform initial sync on first app load
+    console.log('Performing initial data sync on app startup...');
+    const syncResult = await useInitialSync();
+    
+    if (!syncResult.isSuccess && syncResult.successful === 0) {
+      console.warn('Initial sync partially failed, but continuing with cached data');
+    } else {
+      console.log(`Initial sync successful: ${syncResult.successful}/${syncResult.total} databases`);
+    }
+    
+    // Now load evaluations
     evaluations.value = await useEvalData.fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS)
   } catch (error) {
-    console.error("Error fetching evaluations:", error);
+    console.error("Error in initial setup:", error);
+  } finally {
+    isInitializing.value = false;
   }
 })
 

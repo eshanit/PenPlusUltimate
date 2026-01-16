@@ -9,6 +9,10 @@ const showDistrictForm = ref(false);
 const selectedTool = ref<ITools | null>(null);
 const districts = ref<any[]>([]);
 const isLoading = ref(false);
+const isSyncing = ref(false);
+
+// Toast
+const toast = useToast();
 
 // Stores and composables
 const districtsStore = useDistrictsStore();
@@ -49,13 +53,36 @@ const proceedToFacilities = async () => {
 };
 
 const syncDistricts = async () => {
+  isSyncing.value = true;
   try {
-    await useReplicateFromCouchDB(DatabaseNames.DISTRICTS);
-    // Refresh districts after sync
-    await districtsStore.fetchDistricts();
-    districts.value = districtsStore.districts;
+    const result = await useManualSync(DatabaseNames.DISTRICTS, 'from');
+    
+    if (result.success) {
+      // Refresh districts after sync
+      await districtsStore.fetchDistricts();
+      districts.value = districtsStore.districts;
+      
+      toast.add({
+        title: '✓ Sync Successful',
+        description: 'Districts synchronized successfully',
+        color: 'green',
+        icon: 'i-heroicons-check-circle',
+        timeout: 5000
+      });
+    } else {
+      throw new Error(result.error || 'Failed to sync districts');
+    }
   } catch (error) {
     console.error('Failed to sync districts:', error);
+    toast.add({
+      title: '✗ Sync Failed',
+      description: error instanceof Error ? error.message : `Failed to sync districts: ${String(error)}`,
+      color: 'red',
+      icon: 'i-heroicons-exclamation-circle',
+      timeout: 5000
+    });
+  } finally {
+    isSyncing.value = false;
   }
 };
 
@@ -142,8 +169,9 @@ useSeoMeta({
             icon="i-heroicons-arrow-path"
             color="blue"
             variant="outline"
-            label="Sync Districts"
-            :loading="isLoading"
+            :label="isSyncing ? 'Syncing...' : 'Sync Districts'"
+            :loading="isSyncing"
+            :disabled="isSyncing"
             @click="syncDistricts"
             class="flex-1 sm:flex-none"
           />

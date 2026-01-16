@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NCD PenPlus</string>
+    <string name="title_activity_main">NCD PenPlus</string>
+    <string name="package_name">net.solidarmed.app</string>
+    <string name="custom_url_scheme">net.solidarmed.app</string>
+</resources>

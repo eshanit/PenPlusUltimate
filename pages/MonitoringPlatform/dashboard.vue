@@ -2,7 +2,11 @@
 import Routes from '@/constants/Routes';
 import DatabaseNames from "@/constants/DatabaseNames";
 import { useEvalDataStore } from "@/stores/evaluations";
+import testCouchDBConnection from '~/utilities/testCouchDBConnection';
 import { format } from 'date-fns';
+
+const toast = useToast();
+const isSyncingData = ref(false);
 
 // Navigation functions
 const goBack = () => {
@@ -13,8 +17,69 @@ const startEvaluation = () => {
   navigateTo(Routes.EVALUATIONS.path);
 }
 
-const syncData = () => {
-  navigateTo(Routes.SYNCING);
+const syncData = async () => {
+  isSyncingData.value = true;
+  let syncProgress = ref('');
+  
+  try {
+    // Show initial progress
+    syncProgress.value = 'Testing CouchDB connection...';
+    
+    // Test connection first
+    const isConnected = await testCouchDBConnection('test_connection');
+    
+    if (!isConnected) {
+      toast.add({
+        title: '✗ Connection Failed',
+        description: 'Cannot connect to CouchDB server. Check network and credentials.',
+        color: 'red',
+        icon: 'i-heroicons-exclamation-circle',
+        timeout: 5000
+      });
+      return;
+    }
+    
+    syncProgress.value = 'Connection OK. Starting sync...';
+    
+    const result = await useSyncAll();
+    
+    if (result.isSuccess) {
+      toast.add({
+        title: '✓ Sync Successful',
+        description: `Successfully synced ${result.successful} database(s)${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
+        color: 'green',
+        icon: 'i-heroicons-check-circle',
+        timeout: 5000
+      });
+      
+      // Refresh data after successful sync
+      evaluations.value = await useEvalData.fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS);
+    } else {
+      const errorMsg = result.errors.length > 0 
+        ? result.errors.join(', ') 
+        : 'Unknown sync error';
+      
+      toast.add({
+        title: '✗ Sync Failed',
+        description: `${result.failed} database(s) failed: ${errorMsg}`,
+        color: 'red',
+        icon: 'i-heroicons-exclamation-circle',
+        timeout: 5000
+      });
+    }
+  } catch (error) {
+    console.error('Sync process error:', error);
+    toast.add({
+      title: '✗ Sync Process Error',
+      description: error instanceof Error ? error.message : 'An unexpected error occurred',
+      color: 'red',
+      icon: 'i-heroicons-exclamation-circle',
+      timeout: 5000
+    });
+  } finally {
+    isSyncingData.value = false;
+    syncProgress.value = '';
+  }
 }
 
 // Fetch evaluations
@@ -170,9 +235,11 @@ const recentActivities = computed(() => {
             <UButton
               color="orange"
               variant="solid"
-              label="Sync Data Now"
-              :trailing="true"
-              icon="i-heroicons-arrow-right"
+              :label="isSyncingData ? 'Syncing...' : 'Sync Data Now'"
+              :trailing="!isSyncingData"
+              :icon="isSyncingData ? 'i-heroicons-arrow-path' : 'i-heroicons-arrow-right'"
+              :loading="isSyncingData"
+              :disabled="isSyncingData"
               class="w-full justify-center font-medium"
               @click="syncData"
             />

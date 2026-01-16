@@ -9,7 +9,7 @@ const useReplicateDB = async (databaseName: string, direction: 'from' | 'to'): P
 
   // setup
   const localDB = pouchDBConnect(databaseName);
-  const remoteDB = pouchDBConnect(`http://${couchDBUsername}:${couchDBPassword}@${config.public.couchDBUrl.replace('http://', '')}/` + databaseName, {
+  const remoteDB = pouchDBConnect(`${config.public.couchDBUrl}/${databaseName}`, {
     skip_setup: true,
   });
 

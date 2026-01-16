@@ -2,6 +2,23 @@
 import type ITools from '@/interfaces/ITools';
 import Routes from '@/constants/Routes';
 
+// Import all icons
+const iconMap: { [key: string]: string } = {
+  'dietology': new URL('@/public/icons/dietology.png', import.meta.url).href,
+  'cardiology': new URL('@/public/icons/cardiology.png', import.meta.url).href,
+  'heart': new URL('@/public/icons/heart.png', import.meta.url).href,
+  'endocrinology': new URL('@/public/icons/endocrinology.png', import.meta.url).href,
+  'lungs': new URL('@/public/icons/lungs.png', import.meta.url).href,
+  'pills': new URL('@/public/icons/pills.png', import.meta.url).href,
+  'patient': new URL('@/public/icons/patient.png', import.meta.url).href,
+  'liver': new URL('@/public/icons/liver.png', import.meta.url).href,
+  'kidneys': new URL('@/public/icons/kidneys.png', import.meta.url).href,
+};
+
+const getIconUrl = (svgPath: string) => {
+  return iconMap[svgPath] || '';
+};
+
 const user = useUserDetails;
 
 // Form tools data
@@ -222,10 +239,10 @@ useSeoMeta({
                     'bg-gray-100': tool.color === 'gray'
                   }"
                 >
-                  <NuxtImg 
-                    :src="`/icons/${tool.svg_path}.png`" 
+                  <img 
+                    :src="getIconUrl(tool.svg_path)" 
                     :alt="`${tool.label} icon`"
-                    class="w-6 h-6"
+                    class="w-6 h-6 object-contain"
                   />
                 </div>
               </div>

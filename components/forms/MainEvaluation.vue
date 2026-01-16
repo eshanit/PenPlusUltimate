@@ -46,7 +46,7 @@ watch(() => props.evaluationItems, (newItems) => {
         score: existingScore?.score
       };
     });
-    
+
     localStorageState.value = {
       ...localStorageState.value,
       evalItemScores: updatedScores
@@ -58,33 +58,57 @@ watch(() => props.evaluationItems, (newItems) => {
 const useEvaluations = useEvalDataStore();
 const menteeEvals = ref<any[]>([]);
 const mostRecentScores = ref<any[]>([]);
+const isLoadingPreviousScores = ref(false);
 
-onMounted(async () => {
-  if (props.menteeData?._id) {
-    try {
-      menteeEvals.value = await useEvaluations.fetchMenteeEvals(props.menteeData._id) || [];
-      const toolEvals = menteeEvals.value.filter((t: { tool: string | string[]; }) => t.tool == props.selectedTool) || [];
-      mostRecentScores.value = useMostRecentToolItemData(toolEvals) || [];
-    } catch (error) {
-      console.error('Error fetching mentee evaluations:', error);
-      menteeEvals.value = [];
-      mostRecentScores.value = [];
-    }
+// Function to fetch previous evaluations
+const fetchPreviousEvaluations = async () => {
+  if (!props.menteeData?._id || !props.selectedTool) {
+    mostRecentScores.value = [];
+    isLoadingPreviousScores.value = false;
+    return;
   }
+  
+  isLoadingPreviousScores.value = true;
+  try {
+    console.log('Fetching evaluations for mentee:', props.menteeData._id);
+    console.log('Selected tool:', props.selectedTool);
+    
+    menteeEvals.value = await useEvaluations.fetchMenteeEvals(props.menteeData._id) || [];
+    console.log('menteeEvals:', menteeEvals.value);
+    
+    const toolEvals = menteeEvals.value.filter((t: { tool: string | string[]; }) => {
+      if (Array.isArray(props.selectedTool)) {
+        return props.selectedTool.some(tool => Array.isArray(t.tool) ? t.tool.includes(tool) : t.tool === tool);
+      } else {
+        return Array.isArray(t.tool) ? t.tool.includes(props.selectedTool) : t.tool === props.selectedTool;
+      }
+    }) || [];
+    
+    console.log('toolEvals:', toolEvals);
+    mostRecentScores.value = useMostRecentToolItemData(toolEvals) || [];
+    console.log('mostRecentScores:', mostRecentScores.value);
+  } catch (error) {
+    console.error('Error fetching mentee evaluations:', error);
+    menteeEvals.value = [];
+    mostRecentScores.value = [];
+  } finally {
+    isLoadingPreviousScores.value = false;
+  }
+};
+
+// Fetch on mount
+onMounted(() => {
+  fetchPreviousEvaluations();
 });
 
-// FIXED: Use localStorageState for all computed properties
-const exemplaryCount = computed(() => {
-  return localStorageState.value.evalItemScores?.filter((s: EvalItemScore) => s.score === 3).length || 0;
-});
-
-const competentCount = computed(() => {
-  return localStorageState.value.evalItemScores?.filter((s: EvalItemScore) => s.score === 2).length || 0;
-});
-
-const pendingCount = computed(() => {
-  return localStorageState.value.evalItemScores?.filter((s: EvalItemScore) => s.score === undefined).length || 0;
-});
+// Watch for changes in menteeData or selectedTool
+watch(
+  () => [props.menteeData?._id, props.selectedTool],
+  () => {
+    fetchPreviousEvaluations();
+  },
+  { immediate: false }
+);
 
 const prevExemplaryCount = computed(() => mostRecentScores.value.filter(s => s.score === 3).length);
 const prevCompetentCount = computed(() => mostRecentScores.value.filter(s => s.score === 2).length);
@@ -104,9 +128,9 @@ const scoringOptions = [
 ];
 
 // Helper methods
-const getMostRecentScore = (itemNumber: string) => {
-  return mostRecentScores.value.find(score => score.name === itemNumber);
-};
+const getMostRecentScore = computed(() => (itemNumber: string) => {
+  return mostRecentScores.value.find(score => score.name == itemNumber);
+});
 
 const getScoreColor = (score: number): any => {
   const option = scoringOptions.find(opt => opt.value === score);
@@ -170,9 +194,20 @@ const resetScores = () => {
                     {{ item.title }}
                   </h4>
                   
+                  <!-- Loading state for previous scores -->
+                  <div
+                    v-if="isLoadingPreviousScores"
+                    class="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
+                    <div class="flex items-center space-x-2 text-gray-500">
+                      <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
+                      <span class="text-sm">Loading previous scores...</span>
+                    </div>
+                  </div>
+                  
                   <!-- Most Recent Previous Score -->
                   <div
-                    v-if="getMostRecentScore(item.number)"
+                    v-else-if="getMostRecentScore(item.number)"
                     class="mt-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
                   >
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -238,8 +273,8 @@ const resetScores = () => {
                   </div>
 
                   <!-- No Previous Score -->
-                  <div 
-                    v-else-if="menteeEvals.length > 0"
+                  <div
+                    v-else
                     class="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     <div class="flex items-center space-x-2 text-gray-500">
@@ -284,7 +319,7 @@ const resetScores = () => {
               </UFormGroup>
               
               <!-- Score Comparison -->
-              <div v-if="localStorageState.evalItemScores[index].score !== undefined && getMostRecentScore(item.number)"
+              <div v-if="localStorageState.evalItemScores[index].score !== undefined && getMostRecentScore(item.number) && !isLoadingPreviousScores"
                    class="mt-2 p-2 bg-white rounded-lg border text-xs">
                 <div class="flex justify-between items-center">
                   <span class="text-gray-500">Previous:</span>
@@ -350,14 +385,29 @@ const resetScores = () => {
     </UCard>
 
     <EvaluationSummary
+      v-if="!isLoadingPreviousScores"
       :evaluation-items="evaluationItems"
-      :exemplary-count="exemplaryCount"
-      :competent-count="competentCount"
-      :pending-count="pendingCount"
       :most-recent-scores="mostRecentScores"
       :prev-exemplary-count="prevExemplaryCount"
       :prev-competent-count="prevCompetentCount"
     />
+    
+    <!-- Loading state for the summary -->
+    <UCard v-else class="shadow-lg border-0">
+      <template #header>
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Progress Summary</h3>
+          </div>
+        </div>
+      </template>
+      <div class="p-4 text-center">
+        <div class="flex items-center justify-center space-x-2 text-gray-500">
+          <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 animate-spin" />
+          <span>Loading summary data...</span>
+        </div>
+      </div>
+    </UCard>
   </UForm>
 </template>
 

@@ -23,5 +23,14 @@ export default defineNuxtConfig({
       global: 'window' ,
     }
   },
-  ssr: false
+  ssr: false,
+  // Ensure assets are properly built for mobile
+  nitro: {
+    static: true
+  },
+  // Allow access from other devices on the network for development
+  devServer: {
+    host: '0.0.0.0',
+    port: 3000
+  }
 })
