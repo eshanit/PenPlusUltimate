@@ -203,6 +203,7 @@ useSeoMeta({
               </p>
             </div>
           </div>
+          <SharedPrintButton />
         </div>
       </UContainer>
     </div>

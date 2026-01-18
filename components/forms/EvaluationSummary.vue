@@ -15,24 +15,28 @@ const props = defineProps<Props>();
 const localStorageState = useStorage(LocalStorageKeys.SCORES, { evalItemScores: props.evaluationItems });
 
 // Compute counts from localStorage
-const exemplaryCount = computed(() => {
-  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 3).length || 0;
+const outstandingCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 5).length || 0;
+});
+
+const highlyCompetentCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 4).length || 0;
 });
 
 const competentCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 3).length || 0;
+});
+
+const needsImprovementCount = computed(() => {
   return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 2).length || 0;
+});
+
+const notGoodCount = computed(() => {
+  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 1).length || 0;
 });
 
 const pendingCount = computed(() => {
   return localStorageState.value.evalItemScores?.filter((s: any) => s.score === undefined).length || 0;
-});
-
-const needsImprovementCount = computed(() => {
-  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 1).length || 0;
-});
-
-const notObservedCount = computed(() => {
-  return localStorageState.value.evalItemScores?.filter((s: any) => s.score == 0).length || 0;
 });
 
 </script>
@@ -51,10 +55,16 @@ const notObservedCount = computed(() => {
         <div class="text-sm text-gray-600">Total Items</div>
       </div>
       <div>
-        <div class="text-2xl font-bold text-green-600">
-          {{ exemplaryCount }}
+        <div class="text-2xl font-bold text-teal-600">
+          {{ outstandingCount }}
         </div>
-        <div class="text-sm text-gray-600">Exemplary</div>
+        <div class="text-sm text-gray-600">Outstanding</div>
+      </div>
+      <div>
+        <div class="text-2xl font-bold text-green-600">
+          {{ highlyCompetentCount }}
+        </div>
+        <div class="text-sm text-gray-600">Highly Competent</div>
       </div>
       <div>
         <div class="text-2xl font-bold text-blue-600">
@@ -69,16 +79,10 @@ const notObservedCount = computed(() => {
         <div class="text-sm text-gray-600">Needs Improvement</div>
       </div>
       <div>
-        <div class="text-2xl font-bold text-gray-600">
-          {{ notObservedCount }}
+        <div class="text-2xl font-bold text-red-600">
+          {{ notGoodCount }}
         </div>
-        <div class="text-sm text-gray-600">Not Observed</div>
-      </div>
-      <div>
-        <div class="text-2xl font-bold text-orange-600">
-          {{ pendingCount }}
-        </div>
-        <div class="text-sm text-gray-600">Pending</div>
+        <div class="text-sm text-gray-600">Not Good</div>
       </div>
     </div>
 
@@ -90,25 +94,25 @@ const notObservedCount = computed(() => {
           <div class="text-lg font-bold text-purple-600">
             {{ prevExemplaryCount }}
           </div>
-          <div class="text-xs text-gray-600">Prev. Exemplary</div>
+          <div class="text-xs text-gray-600">Prev. Outstanding</div>
         </div>
         <div>
           <div class="text-lg font-bold text-blue-600">
             {{ prevCompetentCount }}
           </div>
-          <div class="text-xs text-gray-600">Prev. Competent</div>
+          <div class="text-xs text-gray-600">Prev. Highly Competent</div>
+        </div>
+        <div>
+          <div class="text-lg font-bold text-teal-600">
+            {{ outstandingCount }}
+          </div>
+          <div class="text-xs text-gray-600">Current Outstanding</div>
         </div>
         <div>
           <div class="text-lg font-bold text-green-600">
-            {{ exemplaryCount }}
+            {{ highlyCompetentCount }}
           </div>
-          <div class="text-xs text-gray-600">Current Exemplary</div>
-        </div>
-        <div>
-          <div class="text-lg font-bold text-blue-600">
-            {{ competentCount }}
-          </div>
-          <div class="text-xs text-gray-600">Current Competent</div>
+          <div class="text-xs text-gray-600">Current Highly Competent</div>
         </div>
       </div>
     </div>

@@ -70,7 +70,7 @@ const evaluationScore = computed(() => {
                                     <span class="font-semibold">
                                         {{ score.score }}
                                     </span>
-                                    <span class="mt-0.5 text-green-500" v-if="score.score === '3'">
+                                    <span class="mt-0.5 text-green-500" v-if="score.score == 5">
                                         <UIcon name="i-heroicons-check-circle" size="18" />
                                     </span>
                                 </div>

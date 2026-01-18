@@ -95,7 +95,7 @@ const latestEvalScoresCountsPerTool = (tool: string) => {
         const scoreKey = `score${score}`;
 
         if (!result[name]) {
-            result[name] = { score1: 0, score2: 0, score3: 0 };
+            result[name] = { score1: 0, score2: 0, score3: 0, score4: 0, score5: 0 };
         }
 
         if (result[name][scoreKey] !== undefined) {
@@ -116,6 +116,8 @@ const toolData = computed(() => {
             items.push({
                 item: e.number,
                 title: e.title,
+                numberof5: counts[e.number]?.score5 ?? null,
+                numberof4: counts[e.number]?.score4 ?? null,
                 numberof3: counts[e.number]?.score3 ?? null,
                 numberof2: counts[e.number]?.score2 ?? null,
                 numberof1: counts[e.number]?.score1 ?? null,
@@ -157,6 +159,7 @@ useSeoMeta({
               </p>
             </div>
           </div>
+          <SharedPrintButton />
         </div>
       </UContainer>
     </div>

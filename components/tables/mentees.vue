@@ -115,13 +115,13 @@ onUpdated(() => {
                 <div class="text-sm text-cyan-700">
                     <strong>Mentees: <span class="text-rose-500">{{ mentees.length }}</span></strong>
                 </div>
-                <div>
+                <!-- <div>
                     <NuxtLink :to="Routes.CREATE_MENTEE">
                         <UButton variant="soft" color="purple" size="lg">
                             <strong>Add Mentee</strong>
                         </UButton>
                     </NuxtLink>
-                </div>
+                </div> -->
             </div>
         </template>
         <template #body>

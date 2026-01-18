@@ -1,0 +1,70 @@
+@media print {
+  /* Hide navigation, buttons, and interactive elements */
+  .no-print,
+  button,
+  .cursor-pointer,
+  nav,
+  .sticky,
+  .fixed {
+    display: none !important;
+  }
+
+  /* Ensure content is visible */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: black;
+    background: white !important;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  /* Tables and grids */
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+
+  /* Cards and containers */
+  .card, .bg-white, .bg-gray-50 {
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    color: black !important;
+  }
+
+  /* Links */
+  a {
+    color: black !important;
+    text-decoration: none !important;
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Charts and visualizations - ensure they print */
+  canvas, svg {
+    max-width: 100%;
+  }
+
+  /* Progress bars and meters */
+  .progress, .meter {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

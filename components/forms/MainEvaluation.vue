@@ -110,8 +110,13 @@ watch(
   { immediate: false }
 );
 
-const prevExemplaryCount = computed(() => mostRecentScores.value.filter(s => s.score === 3).length);
-const prevCompetentCount = computed(() => mostRecentScores.value.filter(s => s.score === 2).length);
+const prevExemplaryCount = computed(() => mostRecentScores.value.filter(s => s.score === 5).length);
+const prevCompetentCount = computed(() => mostRecentScores.value.filter(s => s.score === 4).length);
+
+// Check if all questions have been answered
+const isAllAnswered = computed(() => {
+  return localStorageState.value.evalItemScores.every((item: EvalItemScore) => item.score !== undefined);
+});
 
 // Form schema
 const schema = yup.object({
@@ -121,10 +126,11 @@ const schema = yup.object({
 
 // Scoring options
 const scoringOptions = [
-  { label: '0 - Not Observed', value: 0, color: 'red' },
-  { label: '1 - Needs Improvement', value: 1, color: 'orange' },
-  { label: '2 - Competent', value: 2, color: 'blue' },
-  { label: '3 - Exemplary', value: 3, color: 'green' }
+  { label: '1 - Not Good', value: 1, color: 'red' },
+  { label: '2 - Needs Improvement', value: 2, color: 'orange' },
+  { label: '3 - Competent', value: 3, color: 'blue' },
+  { label: '4 - Highly Competent', value: 4, color: 'green' },
+  { label: '5 - Outstanding', value: 5, color: 'teal' }
 ];
 
 // Helper methods

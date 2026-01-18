@@ -120,7 +120,7 @@ const toolTitle = (code: string) => {
                                     <span class="font-semibold">
                                         {{ evaluation.sessions.session_1.evalItemScores[index].score }}
                                     </span>
-                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_1.evalItemScores[index].score  == '3'">
+                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_1.evalItemScores[index].score  == '5'">
                                         <UIcon name="i-heroicons-check-circle" size="18" />
                                     </span>
                                 </div>
@@ -131,7 +131,7 @@ const toolTitle = (code: string) => {
                                     <span class="font-semibold">
                                         {{ evaluation.sessions.session_2.evalItemScores[index].score }}
                                     </span>
-                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_2.evalItemScores[index].score  == '3'">
+                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_2.evalItemScores[index].score  == '5'">
                                         <UIcon name="i-heroicons-check-circle" size="18" />
                                     </span>
                                 </div>
@@ -146,7 +146,7 @@ const toolTitle = (code: string) => {
                                     <span class="font-semibold">
                                         {{ evaluation.sessions.session_3.evalItemScores[index].score }}
                                     </span>
-                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_3.evalItemScores[index].score  == '3'">
+                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_3.evalItemScores[index].score  == '5'">
                                         <UIcon name="i-heroicons-check-circle" size="18" />
                                     </span>
                                 </div>
@@ -161,7 +161,7 @@ const toolTitle = (code: string) => {
                                     <span class="font-semibold">
                                         {{ evaluation.sessions.session_4.evalItemScores[index].score }}
                                     </span>
-                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_4.evalItemScores[index].score  == '3'">
+                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_4.evalItemScores[index].score  == '5'">
                                         <UIcon name="i-heroicons-check-circle" size="18" />
                                     </span>
                                 </div>
@@ -176,7 +176,7 @@ const toolTitle = (code: string) => {
                                     <span class="font-semibold">
                                         {{ evaluation.sessions.session_5.evalItemScores[index].score }}
                                     </span>
-                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_5.evalItemScores[index].score  == '3'">
+                                    <span class="mt-0.5 text-green-500" v-if="evaluation.sessions.session_5.evalItemScores[index].score  == '5'">
                                         <UIcon name="i-heroicons-check-circle" size="18" />
                                     </span>
                                 </div>

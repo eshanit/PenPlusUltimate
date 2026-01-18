@@ -19,10 +19,11 @@ const showSummary = ref(false)
 const menteeData = ref<any>(null)
 const scoreMarks = ref<any>(null)
 const scoreCounts = ref<ScoreCount>({
-  zero: 0,
   one: 0,
   two: 0,
-  three: 0
+  three: 0,
+  four: 0,
+  five: 0
 })
 const scoreStats = ref<any>({})
 const evalSession = ref<any>(null)
@@ -214,86 +215,106 @@ useSeoMeta({
         </template>
 
         <div class="space-y-4">
-          <!-- Score 3 - Exemplary -->
-          <div
-            class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-            <div class="flex items-center space-x-3">
-              <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-lg">3</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">Exemplary Performance</div>
-                <div class="text-sm text-gray-600">Exceptional skill demonstration</div>
-              </div>
-            </div>
-            <div class="text-right">
-              <div class="text-3xl font-bold text-green-600">
-                {{ scoreCounts.three }}
-              </div>
-              <div class="text-sm text-gray-600">items</div>
-            </div>
-          </div>
+           <!-- Score 5 - Outstanding -->
+           <div
+             class="flex items-center justify-between p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-lg border border-teal-200">
+             <div class="flex items-center space-x-3">
+               <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center">
+                 <span class="text-white font-bold text-lg">5</span>
+               </div>
+               <div>
+                 <div class="font-semibold text-gray-900">Outstanding</div>
+                 <div class="text-sm text-gray-600">Exceptional performance</div>
+               </div>
+             </div>
+             <div class="text-right">
+               <div class="text-3xl font-bold text-teal-600">
+                 {{ scoreCounts.five }}
+               </div>
+               <div class="text-sm text-gray-600">items</div>
+             </div>
+           </div>
 
-          <!-- Score 2 - Competent -->
-          <div
-            class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg border border-blue-200">
-            <div class="flex items-center space-x-3">
-              <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-lg">2</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">Competent Performance</div>
-                <div class="text-sm text-gray-600">Adequate skill demonstration</div>
-              </div>
-            </div>
-            <div class="text-right">
-              <div class="text-3xl font-bold text-blue-600">
-                {{ scoreCounts.two }}
-              </div>
-              <div class="text-sm text-gray-600">items</div>
-            </div>
-          </div>
+           <!-- Score 4 - Highly Competent -->
+           <div
+             class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+             <div class="flex items-center space-x-3">
+               <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                 <span class="text-white font-bold text-lg">4</span>
+               </div>
+               <div>
+                 <div class="font-semibold text-gray-900">Highly Competent</div>
+                 <div class="text-sm text-gray-600">Strong performance</div>
+               </div>
+             </div>
+             <div class="text-right">
+               <div class="text-3xl font-bold text-green-600">
+                 {{ scoreCounts.four }}
+               </div>
+               <div class="text-sm text-gray-600">items</div>
+             </div>
+           </div>
 
-          <!-- Score 1 - Needs Improvement -->
-          <div
-            class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-200">
-            <div class="flex items-center space-x-3">
-              <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-lg">1</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">Needs Improvement</div>
-                <div class="text-sm text-gray-600">Basic understanding shown</div>
-              </div>
-            </div>
-            <div class="text-right">
-              <div class="text-3xl font-bold text-orange-600">
-                {{ scoreCounts.one }}
-              </div>
-              <div class="text-sm text-gray-600">items</div>
-            </div>
-          </div>
+           <!-- Score 3 - Competent -->
+           <div
+             class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg border border-blue-200">
+             <div class="flex items-center space-x-3">
+               <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                 <span class="text-white font-bold text-lg">3</span>
+               </div>
+               <div>
+                 <div class="font-semibold text-gray-900">Competent</div>
+                 <div class="text-sm text-gray-600">Skill demonstrated adequately</div>
+               </div>
+             </div>
+             <div class="text-right">
+               <div class="text-3xl font-bold text-blue-600">
+                 {{ scoreCounts.three }}
+               </div>
+               <div class="text-sm text-gray-600">items</div>
+             </div>
+           </div>
 
-          <!-- Score 0 - Not Observed -->
-          <div
-            class="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg border border-red-200">
-            <div class="flex items-center space-x-3">
-              <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-lg">0</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">Not Observed</div>
-                <div class="text-sm text-gray-600">Skill not demonstrated</div>
-              </div>
-            </div>
-            <div class="text-right">
-              <div class="text-3xl font-bold text-red-600">
-                {{ scoreCounts.zero }}
-              </div>
-              <div class="text-sm text-gray-600">items</div>
-            </div>
-          </div>
-        </div>
+           <!-- Score 2 - Needs Improvement -->
+           <div
+             class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg border border-orange-200">
+             <div class="flex items-center space-x-3">
+               <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                 <span class="text-white font-bold text-lg">2</span>
+               </div>
+               <div>
+                 <div class="font-semibold text-gray-900">Needs Improvement</div>
+                 <div class="text-sm text-gray-600">Basic understanding shown</div>
+               </div>
+             </div>
+             <div class="text-right">
+               <div class="text-3xl font-bold text-orange-600">
+                 {{ scoreCounts.two }}
+               </div>
+               <div class="text-sm text-gray-600">items</div>
+             </div>
+           </div>
+
+           <!-- Score 1 - Not Good -->
+           <div
+             class="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg border border-red-200">
+             <div class="flex items-center space-x-3">
+               <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
+                 <span class="text-white font-bold text-lg">1</span>
+               </div>
+               <div>
+                 <div class="font-semibold text-gray-900">Not Good</div>
+                 <div class="text-sm text-gray-600">Skill not demonstrated</div>
+               </div>
+             </div>
+             <div class="text-right">
+               <div class="text-3xl font-bold text-red-600">
+                 {{ scoreCounts.one }}
+               </div>
+               <div class="text-sm text-gray-600">items</div>
+             </div>
+           </div>
+         </div>
       </UCard>
 
       <!-- Performance Summary -->
@@ -309,9 +330,9 @@ useSeoMeta({
             </div>
             <div class="text-sm text-gray-600">Mean Score</div>
             <div class="mt-3">
-              <UProgress :value="((scoreStats.mean || 0) / 3) * 100" size="md" color="purple" class="mb-2" />
+              <UProgress :value="((scoreStats.mean || 0) / 5) * 100" size="md" color="purple" class="mb-2" />
               <div class="text-xs text-gray-500 text-center">
-                {{ ((scoreStats.mean || 0) / 3 * 100).toFixed(1) }}% of maximum score
+                {{ ((scoreStats.mean || 0) / 5 * 100).toFixed(1) }}% of maximum score
               </div>
             </div>
           </div>
@@ -332,12 +353,16 @@ useSeoMeta({
               <span class="font-semibold text-gray-900">{{ scoredItems }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-600">Exemplary Items:</span>
-              <span class="font-semibold text-green-600">{{ scoreCounts.three }}</span>
+              <span class="text-sm text-gray-600">Outstanding Items:</span>
+              <span class="font-semibold text-teal-600">{{ scoreCounts.five }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Highly Competent Items:</span>
+              <span class="font-semibold text-green-600">{{ scoreCounts.four }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-600">Competent Items:</span>
-              <span class="font-semibold text-blue-600">{{ scoreCounts.two }}</span>
+              <span class="font-semibold text-blue-600">{{ scoreCounts.three }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-600">Completion Rate:</span>
