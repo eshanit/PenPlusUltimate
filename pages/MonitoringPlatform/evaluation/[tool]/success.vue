@@ -21,6 +21,10 @@ const startNewEvaluation = () => {
   navigateTo(Routes.MONITORING_PLATFORM.path);
 };
 
+const viewEvaluationReports = () => {
+  navigateTo('/scores/list');
+};
+
 // Set page metadata
 useSeoMeta({
   title: 'Evaluation Submitted - PenPlus NCD Monitoring',
@@ -85,24 +89,25 @@ useSeoMeta({
               <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <UIcon name="i-heroicons-clipboard-document-check" class="w-6 h-6 text-green-600" />
               </div>
-              <div class="text-2xl font-bold text-green-600">Complete</div>
               <div class="text-sm text-gray-600">Evaluation Status</div>
+              <div class="text-2xl font-bold text-green-600">Complete</div>
             </div>
             
             <div>
               <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <UIcon name="i-heroicons-clock" class="w-6 h-6 text-blue-600" />
               </div>
+               <div class="text-sm text-gray-600">Submitted At</div>
               <div class="text-2xl font-bold text-blue-600">Now</div>
-              <div class="text-sm text-gray-600">Submitted At</div>
             </div>
             
             <div>
               <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <UIcon name="i-heroicons-server" class="w-6 h-6 text-purple-600" />
               </div>
-              <div class="text-2xl font-bold text-purple-600">Synced</div>
               <div class="text-sm text-gray-600">Data Status</div>
+              <div class="text-2xl font-bold text-purple-600">Synced</div>
+              
             </div>
           </div>
         </UCard>
@@ -116,7 +121,7 @@ useSeoMeta({
           </template>
           
           <div class="space-y-4">
-            <div class="flex items-start space-x-3">
+            <div class="flex items-start space-x-3 cursor-pointer" @click="viewEvaluationReports">
               <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                 <UIcon name="i-heroicons-chart-bar" class="w-4 h-4 text-blue-600" />
               </div>
@@ -126,7 +131,7 @@ useSeoMeta({
               </div>
             </div>
             
-            <div class="flex items-start space-x-3">
+            <div class="flex items-start space-x-3 cursor-pointer" @click="startNewEvaluation">
               <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                 <UIcon name="i-heroicons-plus" class="w-4 h-4 text-green-600" />
               </div>
@@ -136,7 +141,7 @@ useSeoMeta({
               </div>
             </div>
             
-            <div class="flex items-start space-x-3">
+            <div class="flex items-start space-x-3 cursor-pointer" @click="goToDashboard">
               <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                 <UIcon name="i-heroicons-home" class="w-4 h-4 text-purple-600" />
               </div>
