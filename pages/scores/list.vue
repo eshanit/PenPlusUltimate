@@ -6,6 +6,9 @@ import { useEvaluationStats } from '@/composables/useEvaluationStats';
 import DatabaseNames from '@/constants/DatabaseNames';
 import { useEvalDataStore } from '@/stores/evaluations';
 import type IFinalEvaluation from '@/interfaces/IFinalEvaluation';
+import { Capacitor } from '@capacitor/core';
+
+const isMobile = Capacitor.isNativePlatform();
 
 useSeoMeta({
   title: 'My Evaluations - PenPlus NCD Monitoring',
@@ -166,7 +169,7 @@ const recentActivity = computed(() => {
 
     <UContainer class="py-6 px-4">
       <!-- Stats Overview -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div v-if="!isMobile" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <UCard 
           v-for="stat in stats" 
           :key="stat.label"

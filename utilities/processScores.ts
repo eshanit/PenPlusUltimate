@@ -68,7 +68,8 @@ const processScores = (tool: string|string[]) => {
         evaluator:user,
         mentee: mentee,
         tool:tool,
-        sessions: sessions
+        sessions: sessions,
+        syncStatus: 'pending' // Initial sync status
     }
 
     return evaluationData

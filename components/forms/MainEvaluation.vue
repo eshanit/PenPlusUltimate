@@ -153,6 +153,27 @@ const resetScores = () => {
     })) || [] as EvalItemScore[]
   };
 };
+
+// Toast
+const toast = useToast();
+
+// Handle continue button click
+const handleContinueClick = () => {
+  if (!isAllAnswered.value) {
+    toast.add({
+      title: 'Incomplete Assessment',
+      description: 'Please complete all competency assessments before continuing to review.',
+      color: 'orange',
+      icon: 'i-heroicons-exclamation-triangle',
+      timeout: 5000
+    });
+  } else {
+    navigateTo({
+      name: Routes?.EVALUATION_SUMMARY.name,
+      params: { tool: props.selectedTool }
+    });
+  }
+};
 </script>
 <template>
   <UForm :state="localStorageState" @submit="" class="space-y-6">
@@ -378,10 +399,8 @@ const resetScores = () => {
             variant="solid"
             :trailing="true"
             size="lg"
-            :to="{
-              name: Routes?.EVALUATION_SUMMARY.name,
-              params: { tool: selectedTool }
-            }"
+            :disabled="!isAllAnswered"
+            @click="handleContinueClick"
             class="min-w-[140px]"
           >
             Continue to Review

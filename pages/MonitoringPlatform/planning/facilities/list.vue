@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Routes from "@/constants/Routes";
 import LocalStorageKeys from "@/constants/LocalStorageKeys";
+import { Capacitor } from '@capacitor/core';
+
+const isMobile = Capacitor.isNativePlatform();
 
 // State
 const showFacilityForm = ref(false);
@@ -132,7 +135,7 @@ useSeoMeta({
       </UCard>
 
       <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div v-if="!isMobile" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <UCard 
           v-for="stat in facilityStats" 
           :key="stat.label"

@@ -21,6 +21,23 @@ export default defineNuxtConfig({
   vite: {
     define: {
       global: 'window' ,
+    },
+    server: {
+      proxy: {
+        '/couchdb': {
+          target: process.env.DATA_BASE_URL,
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/couchdb/, ''),
+          configure: (proxy: any) => {
+            proxy.on('error', (err: any, req: any, res: any) => {
+              console.error('Proxy error:', err);
+            });
+            proxy.on('proxyReq', (proxyReq: any, req: any, res: any) => {
+              proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from(process.env.DATA_BASE_USERNAME + ':' + process.env.DATA_BASE_PSWD).toString('base64'));
+            });
+          }
+        }
+      }
     }
   },
   ssr: false,

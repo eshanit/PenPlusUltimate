@@ -250,22 +250,24 @@ useSeoMeta({
             <UButton
               v-if="selectedTool?.name === 'echo'"
               icon="i-heroicons-play"
-              color="green"
+              color="red"
               variant="solid"
+              size="lg"
               :loading="isLoading"
               label="Start Echo Evaluation"
               @click="startEvaluation(selectedTool.name)"
-              class="min-w-[200px]"
+              class="min-w-[250px] animate-pulse shadow-2xl hover:shadow-red-500/50 hover:scale-105 transition-all duration-300"
             />
             <UButton
               v-else
               icon="i-heroicons-play"
-              color="green"
+              color="red"
               variant="solid"
+              size="lg"
               :loading="isLoading"
               label="Start Evaluation"
               @click="startEvaluation(selectedTool.name)"
-              class="min-w-[200px]"
+              class="min-w-[250px] animate-pulse shadow-2xl hover:shadow-red-500/50 hover:scale-105 transition-all duration-300"
             />
           </div>
         </template>

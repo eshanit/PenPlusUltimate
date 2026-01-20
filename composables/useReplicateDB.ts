@@ -15,11 +15,11 @@ const useReplicateDB = async (databaseName: string, direction: 'from' | 'to'): P
 
   // sync
   const replication = direction === 'from'
-    ? localDB.replicate.from(remoteDB, { live: true, retry: true })
-    : localDB.replicate.to(remoteDB, { live: true, retry: true });
+    ? localDB.replicate.from(remoteDB, { live: false, retry: true })
+    : localDB.replicate.to(remoteDB, { live: false, retry: true });
 
   return replication
-    .on("paused", () => {
+    .on("complete", () => {
       console.log("complete: ", config.public.couchDBUrl, remoteDB, localDB);
       if (databaseName === 'scores') {
         console.log(`You have successfully synced ${databaseName}`);

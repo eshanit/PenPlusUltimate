@@ -8,7 +8,9 @@ interface Score {
     evaluator: IMasterUser;
     mentee: IMasterUser;
     tool: string| Array<string>;
-    sessions: ISession
+    sessions: ISession;
+    syncStatus?: 'pending' | 'success' | 'failed';
+    lastSyncedAt?: number;
 }
 
 type IScore = Readonly<Score>

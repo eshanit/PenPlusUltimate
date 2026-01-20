@@ -36,7 +36,7 @@ const pouchDBConnect = (dbName: string, options?: any) => {
       }
 
       const proxyUrl = `${proxyBaseUrl}/couchdb/${dbPath}`;
-      console.log(`[pouchDbConnect] Routing ${dbPath} through proxy: ${proxyUrl}`);
+      console.log(`[pouchDbConnect] Routing ${dbPath} through proxy: ${proxyUrl} -> ${dbName}`);
       return new PouchDB<any>(proxyUrl, { ...options, fetch: customFetch });
     } else {
       // On server side or in Capacitor, use direct connection

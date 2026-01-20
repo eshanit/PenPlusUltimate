@@ -88,37 +88,83 @@ export const useEvalDataStore = defineStore("evaluations", () => {
    */
 
   const storeScores = async (tool: string | string[]) => {
-
     const scoreData = processScores(tool)
 
-    const storeStatus = await dbEvals.put(scoreData).then((response: { ok: boolean }) => {
-      useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
-
+    const storeStatus = await dbEvals.put(scoreData).then(async (response: { ok: boolean }) => {
       if (response.ok) {
+        // Attempt to sync in background without blocking submission
+        (async () => {
+          try {
+            const syncResult = await useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
+
+            // Check if syncResult is a valid replication object
+            if (syncResult && typeof syncResult === 'object') {
+              // Set initial sync status to pending
+              dbEvals.get(scoreData._id).then((doc: any) => {
+                doc.syncStatus = 'pending';
+                dbEvals.put(doc);
+              });
+
+              // Handle sync completion asynchronously
+              // Check if it's a PouchDB replication object
+              if (typeof syncResult.on === 'function') {
+                syncResult
+                  .on("complete", () => {
+                    // Update sync status to success
+                    dbEvals.get(scoreData._id).then((doc: any) => {
+                      doc.syncStatus = 'success';
+                      doc.lastSyncedAt = Date.now();
+                      dbEvals.put(doc);
+                    });
+                  })
+                  .on("error", (err: any) => {
+                    // Update sync status to failed
+                    dbEvals.get(scoreData._id).then((doc: any) => {
+                      doc.syncStatus = 'failed';
+                      dbEvals.put(doc);
+                    });
+                  });
+              } else {
+                // If not a PouchDB replication object, assume sync completed
+                console.warn('syncResult is not a PouchDB replication object, assuming sync completed');
+                dbEvals.get(scoreData._id).then((doc: any) => {
+                  doc.syncStatus = 'success';
+                  doc.lastSyncedAt = Date.now();
+                  dbEvals.put(doc);
+                });
+              }
+            }
+          } catch (syncError) {
+            console.error('Sync setup failed:', syncError);
+            // Set sync status to failed
+            dbEvals.get(scoreData._id).then((doc: any) => {
+              doc.syncStatus = 'failed';
+              dbEvals.put(doc);
+            });
+          }
+        })();
 
         cleanLocalStorage()
         navigateTo(Routes.SCORE_SUBMIT_SUCCESS)
-
       }
 
       return response;
     })
       .catch((error: any) => {
-        // Error storing Scores
+        console.error('Error storing scores:', error);
+        throw error;
       });
 
     return storeStatus
-
   }
 
   /**
    * @param
    * @returns {Promise<boolean|String>} 
-   * create another sessioo
+   * create another session
    */
 
   const createSessionEval = async (): Promise<Boolean | String> => {
-
     const databaseScores: any = useProcessLocalStorage().retrieve(LocalStorageKeys.DATABASE_SCORE);
     const currentSession: any = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION);
     const scores: any = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES);
@@ -129,23 +175,68 @@ export const useEvalDataStore = defineStore("evaluations", () => {
 
     databaseScores.sessions[sessionKey] = echoData;
 
-
-    return await dbEvals.put(databaseScores).then((response: { ok: boolean }) => {
+    return await dbEvals.put(databaseScores).then(async (response: { ok: boolean }) => {
       if (response.ok === true) {
-        useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
+        // Attempt to sync in background without blocking submission
+        (async () => {
+          try {
+            const syncResult = await useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
+
+            // Check if syncResult is a valid object
+            if (syncResult && typeof syncResult === 'object') {
+              // Set initial sync status to pending
+              dbEvals.get(databaseScores._id).then((doc: any) => {
+                doc.syncStatus = 'pending';
+                dbEvals.put(doc);
+              });
+
+              // Handle sync completion asynchronously
+              // Check if it's a PouchDB replication object with .on method
+              if (typeof syncResult.on === 'function') {
+                syncResult
+                  .on("complete", () => {
+                    // Update sync status to success
+                    dbEvals.get(databaseScores._id).then((doc: any) => {
+                      doc.syncStatus = 'success';
+                      doc.lastSyncedAt = Date.now();
+                      dbEvals.put(doc);
+                    });
+                  })
+                  .on("error", (err: any) => {
+                    // Update sync status to failed
+                    dbEvals.get(databaseScores._id).then((doc: any) => {
+                      doc.syncStatus = 'failed';
+                      dbEvals.put(doc);
+                    });
+                  });
+              } else {
+                // If not a PouchDB replication object, assume sync completed
+                console.warn('syncResult is not a PouchDB replication object, assuming sync completed');
+                dbEvals.get(databaseScores._id).then((doc: any) => {
+                  doc.syncStatus = 'success';
+                  doc.lastSyncedAt = Date.now();
+                  dbEvals.put(doc);
+                });
+              }
+            }
+          } catch (syncError) {
+            console.error('Sync setup failed:', syncError);
+            // Set sync status to failed
+            dbEvals.get(databaseScores._id).then((doc: any) => {
+              doc.syncStatus = 'failed';
+              dbEvals.put(doc);
+            });
+          }
+        })();
 
         cleanLocalStorage()
         navigateTo(Routes.SCORE_SUBMIT_SUCCESS)
       }
       return response.ok;
-
     }).catch((error: Error) => {
-      // Error creating New Session Scores
-
+      console.error('Error creating new session scores:', error);
       return error.message
     });
-
-
   }
 
 

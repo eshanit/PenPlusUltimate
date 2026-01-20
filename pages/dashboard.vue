@@ -15,6 +15,18 @@ const navigateToReporting = () => {
   navigateTo('/ReportPlatform/dashboard');
 }
 
+const navigateToSyncReport = () => {
+  navigateTo('/sync-report');
+}
+
+const navigateToNewEvaluation = () => {
+  navigateTo('/startEvaluating');
+}
+
+const navigateToEvaluationList = () => {
+  navigateTo('/scores/list');
+}
+
 // Fetch evaluations and compute stats
 const useEvalData = useEvalDataStore()
 const evaluations = ref([])
@@ -245,20 +257,23 @@ const dashboardStats = computed(() => useDashboardStats(evaluations.value))
             icon="i-heroicons-plus-circle"
             label="New Evaluation"
             class="justify-start"
+            @click="navigateToNewEvaluation"
           />
           <UButton
             color="gray"
             variant="outline"
-            icon="i-heroicons-document-plus"
-            label="Generate Report"
+            icon="i-heroicons-arrow-path"
+            label="Sync Report"
             class="justify-start"
+            @click="navigateToSyncReport"
           />
           <UButton
             color="gray"
             variant="outline"
-            icon="i-heroicons-user-group"
-            label="Manage Facilities"
+            icon="i-heroicons-clipboard-document-list"
+            label="Evaluation List"
             class="justify-start"
+            @click="navigateToEvaluationList"
           />
           <UButton
             color="gray"

@@ -8,7 +8,7 @@ const tool = route.params.tool
 const menteeData = ref<any>(null)
 
 // Initialize data
-onMounted(() => {
+onMounted(async () => {
   menteeData.value = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATED_MENTEE)
 })
 
@@ -106,12 +106,13 @@ useSeoMeta({
                 <UIcon name="i-heroicons-server" class="w-6 h-6 text-purple-600" />
               </div>
               <div class="text-sm text-gray-600">Data Status</div>
-              <div class="text-2xl font-bold text-purple-600">Synced</div>
-              
+              <div class="text-2xl font-bold text-purple-600">Saved</div>
+
             </div>
           </div>
         </UCard>
       </div>
+
 
       <!-- Next Steps -->
       <div class="max-w-2xl mx-auto mb-8">
@@ -195,7 +196,7 @@ useSeoMeta({
           
           <UCard class="text-center">
             <div class="text-2xl font-bold text-orange-600">✓</div>
-            <div class="text-sm text-gray-600">Synced</div>
+            <div class="text-sm text-gray-600">Saved</div>
           </UCard>
         </div>
       </div>

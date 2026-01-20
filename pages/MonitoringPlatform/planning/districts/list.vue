@@ -3,6 +3,9 @@ import Routes from "@/constants/Routes";
 import LocalStorageKeys from "@/constants/LocalStorageKeys";
 import DatabaseNames from "@/constants/DatabaseNames";
 import type ITools from "~/interfaces/ITools";
+import { Capacitor } from '@capacitor/core';
+
+const isMobile = Capacitor.isNativePlatform();
 
 // State
 const showDistrictForm = ref(false);
@@ -199,7 +202,7 @@ useSeoMeta({
       </div>
 
       <!-- Quick Stats -->
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div v-if="!isMobile" class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
         <UCard class="text-center">
           <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
             <UIcon name="i-heroicons-map" class="w-6 h-6 text-blue-600" />
