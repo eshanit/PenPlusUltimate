@@ -48,17 +48,17 @@ const completionRate = computed(() => {
 
 // Initialize data
 onMounted(() => {
-  menteeData.value = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATED_MENTEE)
-  scoreMarks.value = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES)
-  evalSession.value = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION)
+ menteeData.value = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATED_MENTEE)
+ scoreMarks.value = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES)
+ evalSession.value = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION)
 
-  const now = new Date(Date.now());
-  formattedDate.value = format(now, 'MMMM dd, yyyy');
+ const evalDate = scoreMarks.value?.evalDate ? new Date(scoreMarks.value.evalDate) : new Date(Date.now());
+ formattedDate.value = format(evalDate, 'MMMM dd, yyyy');
 
-  if (scoreMarks.value?.evalItemScores) {
-    scoreCounts.value = useScoreCount(scoreMarks.value.evalItemScores)
-    scoreStats.value = useScoreStatistics(scoreMarks.value.evalItemScores)
-  }
+ if (scoreMarks.value?.evalItemScores) {
+   scoreCounts.value = useScoreCount(scoreMarks.value.evalItemScores)
+   scoreStats.value = useScoreStatistics(scoreMarks.value.evalItemScores)
+ }
 })
 
 // Navigation

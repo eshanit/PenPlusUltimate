@@ -13,6 +13,7 @@ const iconMap: { [key: string]: string } = {
   'patient': new URL('@/public/icons/patient.png', import.meta.url).href,
   'liver': new URL('@/public/icons/liver.png', import.meta.url).href,
   'kidneys': new URL('@/public/icons/kidneys.png', import.meta.url).href,
+  'conversation': new URL('@/public/icons/communication_with_the_doctor.png', import.meta.url).href, // Add counseling icon
 };
 
 const getIconUrl = (svgPath: string) => {
@@ -20,6 +21,9 @@ const getIconUrl = (svgPath: string) => {
 };
 
 const user = useUserDetails;
+
+// Coming soon modal
+const showComingSoon = ref(false);
 
 // Form tools data
 const formTools: Ref<Array<ITools>> = ref([
@@ -37,14 +41,6 @@ const formTools: Ref<Array<ITools>> = ref([
     svg_path: 'cardiology',
     description: 'Cardiovascular disease assessment',
     color: 'red',
-    category: 'Cardiovascular'
-  },
-  {
-    label: 'Echo',
-    name: 'echo',
-    svg_path: 'heart',
-    description: 'Echocardiography evaluation',
-    color: 'pink',
     category: 'Cardiovascular'
   },
   {
@@ -102,8 +98,29 @@ const formTools: Ref<Array<ITools>> = ref([
     description: 'End-of-life care assessment',
     color: 'gray',
     category: 'Supportive Care'
+  },
+  // Add Counseling tool
+  // {
+  //   label: 'Counseling Skills',
+  //   name: 'counseling',
+  //   svg_path: 'conversation', // Using conversation icon for counseling
+  //   description: 'Patient communication and counseling evaluation',
+  //   color: 'teal',
+  //   category: 'Communication'
+  // },
+  // Add Technical Skills tool
+  {
+    label: 'Technical Skills',
+    name: 'technical',
+    svg_path: 'heart', // Using heart/echo icon for technical skills
+    description: 'Diagnostic and technical procedure evaluation',
+    color: 'orange',
+    category: 'Technical'
   }
 ]);
+
+// Filtered tools for category filtering
+const filteredTools = ref(formTools.value);
 
 // Navigation
 const goBack = () => {
@@ -113,6 +130,15 @@ const goBack = () => {
 const selectTool = (tool: ITools) => {
   useProcessLocalStorage().store('Tool', tool);
   navigateTo(Routes.DISTRICTS.path);
+};
+
+// Filtering methods
+const setAllTools = () => {
+  filteredTools.value = formTools.value;
+};
+
+const filterByCategory = (category: string) => {
+  filteredTools.value = formTools.value.filter(t => t.category === category);
 };
 
 // Set page metadata
@@ -181,13 +207,38 @@ useSeoMeta({
         <template #description>
           Choose the evaluation form that matches the healthcare condition you wish to assess. 
           Each tool contains condition-specific metrics and protocols for comprehensive provider evaluation.
+          <span class="font-semibold mt-1 block">New: Counseling and Technical Skills tools added!</span>
         </template>
       </UAlert>
 
+      <!-- Category Filter -->
+      <div class="mb-6 flex flex-wrap gap-2">
+        <UBadge
+          size="lg"
+          variant="solid"
+          color="blue"
+          class="cursor-pointer hover:opacity-90"
+          @click="setAllTools"
+        >
+          All Tools ({{ formTools.length }})
+        </UBadge>
+        <UBadge
+          v-for="category in ['Metabolic', 'Cardiovascular', 'Hematology', 'Pulmonary', 'Neurology', 'Gastrointestinal', 'Renal', 'Supportive Care', 'Communication', 'Technical']"
+          :key="category"
+          size="lg"
+          variant="outline"
+          color="gray"
+          class="cursor-pointer hover:bg-gray-50"
+          @click="filterByCategory(category)"
+        >
+          {{ category }} ({{ formTools.filter(t => t.category === category).length }})
+        </UBadge>
+      </div>
+
       <!-- Tools Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <UCard 
-          v-for="tool in formTools" 
+        <UCard
+          v-for="tool in filteredTools"
           :key="tool.name"
           class="hover:shadow-lg transition-all duration-300 hover-lift cursor-pointer group border-l-4"
           :class="{
@@ -269,7 +320,7 @@ useSeoMeta({
       </div>
 
       <!-- Empty State (if needed) -->
-      <div v-if="formTools.length === 0" class="text-center py-12">
+      <div v-if="filteredTools.length === 0" class="text-center py-12">
         <UIcon name="i-heroicons-clipboard-document" class="w-16 h-16 text-gray-300 mx-auto mb-4" />
         <h3 class="text-lg font-medium text-gray-900 mb-2">No evaluation tools available</h3>
         <p class="text-gray-500">Please contact your administrator to configure evaluation tools.</p>
@@ -283,7 +334,7 @@ useSeoMeta({
             <div class="text-sm text-gray-600">Available Tools</div>
           </div>
           <div>
-            <div class="text-2xl font-bold text-green-600">6</div>
+            <div class="text-2xl font-bold text-green-600">{{ new Set(formTools.map(t => t.category)).size }}</div>
             <div class="text-sm text-gray-600">Disease Categories</div>
           </div>
           <div>
@@ -291,11 +342,55 @@ useSeoMeta({
             <div class="text-sm text-gray-600">Assessment Protocols</div>
           </div>
           <div>
-            <div class="text-2xl font-bold text-orange-600">NCD Focus</div>
-            <div class="text-sm text-gray-600">Specialized Tools</div>
+            <div class="text-2xl font-bold text-teal-600">+2 New</div>
+            <div class="text-sm text-gray-600">Counseling & Technical</div>
           </div>
         </div>
       </div>
+
+      <!-- Coming Soon Modal -->
+      <UModal v-model="showComingSoon">
+        <UCard class="max-w-md">
+          <template #header>
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-pink-100 rounded-xl flex items-center justify-center">
+                <UIcon name="i-heroicons-heart" class="w-5 h-5 text-pink-600" />
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">Echo Evaluation</h3>
+                <p class="text-sm text-gray-600">Coming Soon</p>
+              </div>
+            </div>
+          </template>
+
+          <div class="space-y-4">
+            <p class="text-gray-600">
+              The Echocardiography evaluation tool is currently under development.
+              We're working hard to bring you comprehensive cardiac assessment capabilities.
+            </p>
+
+            <div class="bg-pink-50 border border-pink-200 rounded-lg p-4">
+              <div class="flex items-center space-x-2">
+                <UIcon name="i-heroicons-clock" class="w-4 h-4 text-pink-600" />
+                <span class="text-sm font-medium text-pink-800">Expected Release</span>
+              </div>
+              <p class="text-sm text-pink-700 mt-1">TBA</p>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex justify-end space-x-2">
+              <UButton
+                color="gray"
+                variant="ghost"
+                @click="showComingSoon = false"
+              >
+                Close
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </UModal>
     </UContainer>
   </div>
 </template>

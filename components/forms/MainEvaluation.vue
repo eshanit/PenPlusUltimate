@@ -9,9 +9,17 @@ import { useMostRecentToolItemData } from "@/composables/useMostRecentToolItemDa
 import EvaluationItem from './EvaluationItem.vue';
 import EvaluationSummary from './EvaluationSummary.vue';
 
+type BadgeColor = 'red' | 'orange' | 'blue' | 'green' | 'teal' | 'gray';
+
 interface EvalItemScore {
   name: string;
   score?: number;
+}
+
+interface ScoringOption {
+  description: string;
+  score: number;
+  color: BadgeColor;
 }
 
 const props = defineProps<{
@@ -22,13 +30,29 @@ const props = defineProps<{
 }>();
 
 // Create initial state from props
-const initialState = computed(() => ({
-  evalDate: Date.now(),
-  evalItemScores: props.evaluationItems?.map((evalItem: any) => ({
-    name: evalItem.number,
-    score: undefined,
-  })) || [] as EvalItemScore[]
-}));
+const initialState = computed(() => {
+  // Check if resuming a session
+  const databaseScore = useProcessLocalStorage().retrieve(LocalStorageKeys.DATABASE_SCORE);
+  const evaluationSession = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION);
+  const existingScores = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES);
+
+  let evalDate = format(new Date(), 'yyyy-MM-dd');
+  if (databaseScore && evaluationSession && databaseScore.sessions?.[`session_${evaluationSession}`]?.evalDate) {
+    // Resuming a session, use the existing evalDate
+    evalDate = format(new Date(databaseScore.sessions[`session_${evaluationSession}`].evalDate), 'yyyy-MM-dd');
+  } else if (existingScores?.evalDate) {
+    // Use existing evalDate from localStorage
+    evalDate = existingScores.evalDate;
+  }
+
+  return {
+    evalDate,
+    evalItemScores: props.evaluationItems?.map((evalItem: any) => ({
+      name: evalItem.number,
+      score: undefined,
+    })) || [] as EvalItemScore[]
+  };
+});
 
 // Form state - use localStorage but sync with props when they change
 const localStorageState = useStorage(LocalStorageKeys.SCORES, initialState.value);
@@ -125,12 +149,13 @@ const schema = yup.object({
 });
 
 // Scoring options
-const scoringOptions = [
-  { label: '1 - Not Good', value: 1, color: 'red' },
-  { label: '2 - Needs Improvement', value: 2, color: 'orange' },
-  { label: '3 - Competent', value: 3, color: 'blue' },
-  { label: '4 - Highly Competent', value: 4, color: 'green' },
-  { label: '5 - Outstanding', value: 5, color: 'teal' }
+const scoringOptions: ScoringOption[] = [
+  { description: '0 - The competency cannot be evaluated', score: 0, color: 'gray' },
+  { description: '1 - Does not demonstrate competency', score: 1, color: 'red' },
+  { description: '2 - Demonstrates basic competency', score: 2, color: 'orange' },
+  { description: '3 - Demonstrates satisfactory competency', score: 3, color: 'blue' },
+  { description: '4 - Demonstrates advanced competency', score: 4, color: 'green' },
+  { description: '5 - Demonstrates exceptional competency', score: 5, color: 'teal' }
 ];
 
 // Helper methods
@@ -138,15 +163,16 @@ const getMostRecentScore = computed(() => (itemNumber: string) => {
   return mostRecentScores.value.find(score => score.name == itemNumber);
 });
 
-const getScoreColor = (score: number): any => {
-  const option = scoringOptions.find(opt => opt.value === score);
+const getScoreColor = (score: number | undefined): BadgeColor => {
+  if (score === undefined) return 'gray';
+  const option = scoringOptions.find(opt => opt.score === score);
   return option ? option.color : 'gray';
 };
 
 // Helper to reset scores if needed
 const resetScores = () => {
   localStorageState.value = {
-    evalDate: Date.now(),
+    evalDate: localStorageState.value.evalDate, // Preserve existing evalDate
     evalItemScores: props.evaluationItems?.map((evalItem: any) => ({
       name: evalItem.number,
       score: undefined,
@@ -177,6 +203,10 @@ const handleContinueClick = () => {
 </script>
 <template>
   <UForm :state="localStorageState" @submit="" class="space-y-6">
+    <!-- Evaluation Date -->
+    <UFormGroup label="Evaluation Date" name="evalDate">
+      <UInput v-model="localStorageState.evalDate" type="date" />
+    </UFormGroup>
     <!-- Evaluation Items -->
     <UCard class="shadow-lg border-0">
       <template #header>
@@ -319,8 +349,8 @@ const handleContinueClick = () => {
                 <USelect
                   v-model="localStorageState.evalItemScores[index].score"
                   :options="scoringOptions"
-                  option-attribute="label"
-                  value-attribute="value"
+                  option-attribute="description"
+                  value-attribute="score"
                   placeholder="Select score"
                   class="w-full"
                   :ui="{
@@ -339,7 +369,7 @@ const handleContinueClick = () => {
                   <template #option="{ option }">
                     <div class="flex items-center space-x-3">
                       <span class="w-3 h-3 rounded-full" :class="`bg-${option.color}-500`"></span>
-                      <span>{{ option.label }}</span>
+                      <span>{{ option.description }}</span>
                     </div>
                   </template>
                 </USelect>

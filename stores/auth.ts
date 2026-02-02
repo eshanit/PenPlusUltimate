@@ -64,10 +64,10 @@ export const useAuthStore = defineStore("auth", () => {
 
             const profileData = {
                 id: "master-user",
-                firstname: "Master",
+                firstname: userData.username || "Master",
                 lastname: "User",
                 username: userData.username || "master",
-                searchIndex: "masteruser"
+                searchIndex: (userData.username || "master").toLowerCase()
             };
 
             useProcessLocalStorage().store(LocalStorageKeys.PROFILE, profileData);

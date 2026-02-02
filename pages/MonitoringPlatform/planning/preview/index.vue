@@ -34,7 +34,7 @@ const startEvaluation = async (tool: string) => {
   try {
     localStorage.removeItem(LocalStorageKeys.SCORES);
     
-    if (tool === 'echo') {
+    if (tool === 'echox') {
       await navigateTo({
         name: Routes.ECHO_PRAC_EVALUATION.name,
         params: { tool: tool }

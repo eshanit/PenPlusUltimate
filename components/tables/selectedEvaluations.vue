@@ -37,6 +37,14 @@ const columns = [
         label: "Session 3",
     },
     {
+        key: "session4",
+        label: "Session 4",
+    },
+    {
+        key: "session5",
+        label: "Session 5",
+    },
+    {
         key: 'actions',
         label: 'View'
     }
@@ -154,11 +162,47 @@ const uniqueIds = Array.from(new Set(numMentees));
                     {{ format(row.sessions.session_3.evalDate, 'yyyy-MM-dd') }}
                 </UButton>
             </div>
+        </template>
 
+        <template #session4-data="{ row }">
+            <div v-if="row.sessions.session_1 && !row.sessions.session_2">
+                -
+            </div>
+            <div v-else-if="row.sessions.session_1 && row.sessions.session_2 && row.sessions.session_3 && !row.sessions.session_4"
+                @click="startSession(row._id, row.tool, '4')">
+                <UButton variant="soft" color="rose" size="xl">
+                    Start Session
+                </UButton>
+            </div>
+            <div v-else-if="row.sessions.session_4">
+                <UButton variant="soft" color="green" size="xl" @click="viewSession('4', row._id)">
+                    {{ format(row.sessions.session_4.evalDate, 'yyyy-MM-dd') }}
+                </UButton>
+            </div>
+            <div v-else>
+                -
+            </div>
+        </template>
+
+        <template #session5-data="{ row }">
+            <div v-if="row.sessions.session_1 && row.sessions.session_2 && row.sessions.session_3 && row.sessions.session_4 && !row.sessions.session_5"
+                @click="startSession(row._id, row.tool, '5')">
+                <UButton variant="soft" color="rose" size="xl">
+                    Start Session
+                </UButton>
+            </div>
+            <div v-else-if="row.sessions.session_5">
+                <UButton variant="soft" color="green" size="xl" @click="viewSession('5', row._id)">
+                    {{ format(row.sessions.session_5.evalDate, 'yyyy-MM-dd') }}
+                </UButton>
+            </div>
+            <div v-else>
+                -
+            </div>
         </template>
 
         <template #actions-data="{ row }">
-            <div v-if="row.sessions.session_3">
+            <div v-if="row.sessions.session_5">
                 <NuxtLink :to="{
                     name: Routes.FULL_EVALUATION_REPORT.name,
                     params: {

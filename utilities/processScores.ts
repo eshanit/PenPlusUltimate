@@ -39,7 +39,7 @@ const processScores = (tool: string|string[]) => {
     }
 
     const session = {
-        evalDate: Date.now(),
+        evalDate: new Date(scoreData.evalDate).getTime(),
         evalItemScores:tool!=='echo'?scoreData.evalItemScores:null,
         cardiacEval: tool==='echo'?cardiacEval:null
    }

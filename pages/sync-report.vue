@@ -133,7 +133,7 @@ const getStatusIcon = (status: string) => {
 
 // Navigation
 const goBack = () => {
-  navigateTo('/');
+  navigateTo('/dashboard');
 };
 </script>
 

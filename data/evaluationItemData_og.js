@@ -2,7 +2,7 @@ export default [
     {
         tool: 'diabetes',
         label: 'Type 1 or 2 Diabetes',
-        numItems: 33,
+        numItems: 24,
         evaluationItems: [
             {
                 slug: '1-diabetes-1',
@@ -291,122 +291,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-1',
-                number: 'DC1',
-                title: 'Teaches a patient how to use a home glucometer and document blood glucose into logbook and treatment goals',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-2',
-                number: 'DC2',
-                title: 'Counsels about risk of hypoglycemia and how to prevent it in especial situations',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-3',
-                number: 'DC3',
-                title: 'Counsels on the following: insulin storage, injection sites/techniques, pregnancy, contracept',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-4',
-                number: 'DC4',
-                title: 'Teaches patients on self-management',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-5',
-                number: 'DC5',
-                title: 'Recommends a diet plan of local foods',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-6',
-                number: 'DC6',
-                title: 'Advises on Type1 Diabetes DKA warning signs and advising patients on sick day management',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-7',
-                number: 'DC7',
-                title: 'Does not use judgmental language "scare tactics"',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-8',
-                number: 'DC8',
-                title: 'Prioritizes the specific counselling that is needed in each visit',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-9',
-                number: 'DC9',
-                title: 'Reviews in each visit understanding of the learning points from past visits',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
             }
-
         ]
     },
     {
         tool: 'cardiac',
         label: 'Cardiac Conditions',
-        numItems: 40,
+        numItems: 35,
         evaluationItems: [
             {
                 slug: '2-cardiac-1',
@@ -827,73 +718,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-10',
-                number: 'CC1',
-                title: 'Provides counselling related to medication dose and side effects (e.g. syncope)',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-11',
-                number: 'CC2',
-                title: 'Provides counselling about decompensated heart failure (causes of worsening) and the need to seek care',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-12',
-                number: 'CC3',
-                title: 'Teaches patients on diuretic titration and/or ECA inhibitors and betablockers titration',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-13',
-                number: 'CC4',
-                title: 'Counsels patients and families appropriately on family planning when cardiac diagnosis is present',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-14',
-                number: 'CC5',
-                title: 'Counsels on diet when on warfarin',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'sickle_cell',
         label: 'Sickle Cell Disease',
-        numItems: 31,
+        numItems: 27,
         evaluationItems: [
             {
                 slug: '3-sickle-cell-1',
@@ -1218,61 +1049,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-15',
-                number: 'SC1',
-                title: 'Schedules visits and provides basic genetic counselling to parents as to the causes and future risk of children to have SCD',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-16',
-                number: 'SC2',
-                title: 'Provides counselling to parents, related to acute and chronic complications (especially management of pain) and when to come to the hospital',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-17',
-                number: 'SC3',
-                title: 'Advises on contraception use in childbearing age women on hydroxyurea',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-18',
-                number: 'SC4',
-                title: 'Recognizes the role and types of psychosocial support needed in SCD management',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'respiratory',
         label: 'Respiratory Diseases',
-        numItems: 21,
+        numItems: 17,
         evaluationItems: [
             {
                 slug: '4-respiratory-1',
@@ -1477,61 +1260,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-19',
-                number: 'RC1',
-                title: 'Counsels on avoiding asthma triggers',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-20',
-                number: 'RC2',
-                title: 'Counsels on stopping smoking',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-21',
-                number: 'RC3',
-                title: 'Demonstrates inhaler technique to patient & when to use steroids and salbutamol',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-22',
-                number: 'RC4',
-                title: 'Teaches patients how to adjust their own treatment for Asthma',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'liver',
         label: 'Chronic Liver Disease',
-        numItems: 15,
+        numItems: 14,
         evaluationItems: [
             {
                 slug: '5-liver-1',
@@ -1700,25 +1435,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-23',
-                number: 'LC1',
-                title: 'Provides counselling about health habits and signs of decompensation',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'hypertension',
         label: 'Severe Hypertension',
-        numItems: 19,
+        numItems: 18,
         evaluationItems: [
             {
                 slug: '6-hypertension-1',
@@ -1935,25 +1658,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-24',
-                number: 'HC1',
-                title: 'Counsel the patients about the risk of hypertension if not controlled',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'kidney',
         label: 'Chronic Kidney Disease',
-        numItems: 25,
+        numItems: 23,
         evaluationItems: [
             {
                 slug: '7-kidney-1',
@@ -2254,37 +1965,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-25',
-                number: 'KC1',
-                title: 'Provides counselling about diet, potential complications and prognosis of the disease',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-26',
-                number: 'KC2',
-                title: 'Provides counselling about avoiding the use of common nephrotoxic drugs as NSAIDs',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'epilepsy',
         label: 'Epilepsy',
-        numItems: 10,
+        numItems: 8,
         evaluationItems: [
             {
                 slug: '8-epilepsy-1',
@@ -2381,37 +2068,13 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-27',
-                number: 'EC1',
-                title: 'Counsels about secondary effects of drugs',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-28',
-                number: 'EC2',
-                title: 'Asks about adherence to medication & teaches patient to keep a seizure diary',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
+            }
         ]
     },
     {
         tool: 'palliative',
         label: 'Palliative Care',
-        numItems: 16,
+        numItems: 14,
         evaluationItems: [
             {
                 slug: '9-palliative-1',
@@ -2580,30 +2243,6 @@ export default [
                     { description: 'Demonstrates advanced competency', score: 4 },
                     { description: 'Demonstrates exceptional competency', score: 5 }
                 ]
-            },
-            {
-                slug: '11-counseling-29',
-                number: 'PCC1',
-                title: 'Communicates effectively and with sensitivity including appropriately breaking bad news, addressing emotional reactions and offering emotional support',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
-            },
-            {
-                slug: '11-counseling-30',
-                number: 'PCC2',
-                title: 'Offers supportive counseling covering psychosocial & spiritual care',
-                scoring: [
-                    { description: 'Does not demonstrate competency', score: 1 },
-                    { description: 'Demonstrates basic competency', score: 2 },
-                    { description: 'Demonstrates satisfactory competency', score: 3 },
-                    { description: 'Demonstrates advanced competency', score: 4 },
-                    { description: 'Demonstrates exceptional competency', score: 5 }
-                ]
             }
         ]
     },
@@ -2748,6 +2387,373 @@ export default [
                 slug: '10-technical-12',
                 number: 'R3a',
                 title: 'Identifies X-Ray compatible with COPD, restrictive lung diseases',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            }
+        ]
+    },
+    {
+        tool: 'counseling',
+        label: 'Counseling Competencies',
+        numItems: 35,
+        evaluationItems: [
+            {
+                slug: '11-counseling-1',
+                number: 'DC1',
+                title: 'Teaches a patient how to use a home glucometer and document blood glucose into logbook and treatment goals',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-2',
+                number: 'DC2',
+                title: 'Counsels about risk of hypoglycemia and how to prevent it in especial situations',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-3',
+                number: 'DC3',
+                title: 'Counsels on the following: insulin storage, injection sites/techniques, pregnancy, contracept',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-4',
+                number: 'DC4',
+                title: 'Teaches patients on self-management',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-5',
+                number: 'DC5',
+                title: 'Recommends a diet plan of local foods',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-6',
+                number: 'DC6',
+                title: 'Advises on Type1 Diabetes DKA warning signs and advising patients on sick day management',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-7',
+                number: 'DC7',
+                title: 'Does not use judgmental language "scare tactics"',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-8',
+                number: 'DC8',
+                title: 'Prioritizes the specific counselling that is needed in each visit',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-9',
+                number: 'DC9',
+                title: 'Reviews in each visit understanding of the learning points from past visits',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-10',
+                number: 'CC1',
+                title: 'Provides counselling related to medication dose and side effects (e.g. syncope)',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-11',
+                number: 'CC2',
+                title: 'Provides counselling about decompensated heart failure (causes of worsening) and the need to seek care',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-12',
+                number: 'CC3',
+                title: 'Teaches patients on diuretic titration and/or ECA inhibitors and betablockers titration',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-13',
+                number: 'CC4',
+                title: 'Counsels patients and families appropriately on family planning when cardiac diagnosis is present',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-14',
+                number: 'CC5',
+                title: 'Counsels on diet when on warfarin',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-15',
+                number: 'SC1',
+                title: 'Schedules visits and provides basic genetic counselling to parents as to the causes and future risk of children to have SCD',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-16',
+                number: 'SC2',
+                title: 'Provides counselling to parents, related to acute and chronic complications (especially management of pain) and when to come to the hospital',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-17',
+                number: 'SC3',
+                title: 'Advises on contraception use in childbearing age women on hydroxyurea',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-18',
+                number: 'SC4',
+                title: 'Recognizes the role and types of psychosocial support needed in SCD management',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-19',
+                number: 'RC1',
+                title: 'Counsels on avoiding asthma triggers',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-20',
+                number: 'RC2',
+                title: 'Counsels on stopping smoking',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-21',
+                number: 'RC3',
+                title: 'Demonstrates inhaler technique to patient & when to use steroids and salbutamol',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-22',
+                number: 'RC4',
+                title: 'Teaches patients how to adjust their own treatment for Asthma',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-23',
+                number: 'LC1',
+                title: 'Provides counselling about health habits and signs of decompensation',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-24',
+                number: 'HC1',
+                title: 'Counsel the patients about the risk of hypertension if not controlled',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-25',
+                number: 'KC1',
+                title: 'Provides counselling about diet, potential complications and prognosis of the disease',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-26',
+                number: 'KC2',
+                title: 'Provides counselling about avoiding the use of common nephrotoxic drugs as NSAIDs',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-27',
+                number: 'EC1',
+                title: 'Counsels about secondary effects of drugs',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-28',
+                number: 'EC2',
+                title: 'Asks about adherence to medication & teaches patient to keep a seizure diary',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-29',
+                number: 'PCC1',
+                title: 'Communicates effectively and with sensitivity including appropriately breaking bad news, addressing emotional reactions and offering emotional support',
+                scoring: [
+                    { description: 'Does not demonstrate competency', score: 1 },
+                    { description: 'Demonstrates basic competency', score: 2 },
+                    { description: 'Demonstrates satisfactory competency', score: 3 },
+                    { description: 'Demonstrates advanced competency', score: 4 },
+                    { description: 'Demonstrates exceptional competency', score: 5 }
+                ]
+            },
+            {
+                slug: '11-counseling-30',
+                number: 'PCC2',
+                title: 'Offers supportive counseling covering psychosocial & spiritual care',
                 scoring: [
                     { description: 'Does not demonstrate competency', score: 1 },
                     { description: 'Demonstrates basic competency', score: 2 },

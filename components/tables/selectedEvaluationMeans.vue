@@ -36,6 +36,14 @@ const columns = [
         label: "Session 3",
     },
     {
+        key: "session4",
+        label: "Session 4",
+    },
+    {
+        key: "session5",
+        label: "Session 5",
+    },
+    {
         key: 'actions',
         label: 'Mean Score'
     }
@@ -168,7 +176,50 @@ const uniqueIds = Array.from((numMentees));
                     </span>
                 </UButton>
             </div>
+        </template>
 
+        <template #session4-data="{ row }">
+            <div v-if="row.sessions.session_1 && !row.sessions.session_2">
+                -
+            </div>
+            <div v-else-if="row.sessions.session_1 && row.sessions.session_2 && row.sessions.session_3 && !row.sessions.session_4">
+                -
+            </div>
+            <div v-else-if="row.sessions.session_4">
+                <UButton variant="soft" color="green" size="xl" @click="viewSession('4', row._id)">
+                    <span v-if="row.tool == 'echo'">
+                        -.--
+                    </span>
+                    <span v-else>
+                        {{ useSessionMeanScore(row.sessions.session_4.evalItemScores) }}
+                    </span>
+                </UButton>
+            </div>
+            <div v-else>
+                -
+            </div>
+        </template>
+
+        <template #session5-data="{ row }">
+            <div v-if="row.sessions.session_1 && !row.sessions.session_2">
+                -
+            </div>
+            <div v-else-if="row.sessions.session_1 && row.sessions.session_2 && row.sessions.session_3 && row.sessions.session_4 && !row.sessions.session_5">
+                -
+            </div>
+            <div v-else-if="row.sessions.session_5">
+                <UButton variant="soft" color="green" size="xl" @click="viewSession('5', row._id)">
+                    <span v-if="row.tool == 'echo'">
+                        -.--
+                    </span>
+                    <span v-else>
+                        {{ useSessionMeanScore(row.sessions.session_5.evalItemScores) }}
+                    </span>
+                </UButton>
+            </div>
+            <div v-else>
+                -
+            </div>
         </template>
 
         <template #actions-data="{ row }">
@@ -195,11 +246,33 @@ const uniqueIds = Array.from((numMentees));
                                 parseFloat(useSessionMeanScore(row.sessions.session_2.evalItemScores))) / 2).toFixed(2) }}
                         </UButton>
                     </div>
-                    <div v-else>
+                    <div v-else-if="row.sessions.session_1 && row.sessions.session_2 && row.sessions.session_3 && !row.sessions.session_4">
                         <UButton variant="outline" color="orange" size="xl">
                             {{ ((parseFloat(useSessionMeanScore(row.sessions.session_1.evalItemScores)) +
                                 parseFloat(useSessionMeanScore(row.sessions.session_2.evalItemScores)) +
                                 parseFloat(useSessionMeanScore(row.sessions.session_3.evalItemScores))) / 3).toFixed(2) }}
+                        </UButton>
+                    </div>
+                    <div v-else-if="row.sessions.session_1 && row.sessions.session_2 && row.sessions.session_3 && row.sessions.session_4 && !row.sessions.session_5">
+                        <UButton variant="outline" color="orange" size="xl">
+                            {{ ((parseFloat(useSessionMeanScore(row.sessions.session_1.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_2.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_3.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_4.evalItemScores))) / 4).toFixed(2) }}
+                        </UButton>
+                    </div>
+                    <div v-else-if="row.sessions.session_5">
+                        <UButton variant="outline" color="orange" size="xl">
+                            {{ ((parseFloat(useSessionMeanScore(row.sessions.session_1.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_2.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_3.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_4.evalItemScores)) +
+                                parseFloat(useSessionMeanScore(row.sessions.session_5.evalItemScores))) / 5).toFixed(2) }}
+                        </UButton>
+                    </div>
+                    <div v-else>
+                        <UButton variant="outline" color="orange" size="xl">
+                            -
                         </UButton>
                     </div>
                 </NuxtLink>

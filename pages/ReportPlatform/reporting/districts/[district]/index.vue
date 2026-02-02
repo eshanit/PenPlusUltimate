@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type IDistrict from "@/interfaces/IDistrict";
 import processScores from "~/utilities/processScores";
-import evaluationItemData from "@/data/evaluationItemData";
+import evaluationItemData from "~/data/evaluationItemData_og";
 
 const router = useRouter()
 const goBack = () => {

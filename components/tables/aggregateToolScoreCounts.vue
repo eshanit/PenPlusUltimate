@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import capitalizeFirstLetter from "@/utilities/capitalizeFirstLetter";
-import evaluationItemData from '@/data/evaluationItemData';
+import evaluationItemData from '~/data/evaluationItemData_og';
 import type IFinalEvaluation from "~/interfaces/IFinalEvaluation";
 
 const props = defineProps<{

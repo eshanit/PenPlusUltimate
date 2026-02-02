@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DatabaseNames from "@/constants/DatabaseNames";
 import type IFinalEvaluation from "~/interfaces/IFinalEvaluation";
-import evaluationItemData from "@/data/evaluationItemData";
+import evaluationItemData from "~/data/evaluationItemData_og";
 
 const route = useRoute()
 const gender: any = route.params.gender

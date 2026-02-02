@@ -14,6 +14,7 @@ const processEchoScores = () => {
     const imageQuality: any = useProcessLocalStorage().retrieve(LocalStorageKeys.CARDIAC_IMAGE_QUALITY)
 
     //evaluation session
+    const scores: any = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES)
 
     const evaluationSession: any = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION)
 
@@ -28,7 +29,7 @@ const processEchoScores = () => {
     }
 
     const session = {
-        evalDate: Date.now(),
+        evalDate: new Date(scores.evalDate).getTime(),
         evalItemScores:null,
         cardiacEval: cardiacEval
    }
