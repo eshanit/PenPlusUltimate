@@ -6,6 +6,7 @@ import { useScoreCount } from '@/composables/useScoreCount';
 console.log('CompetantScores component loaded');
 
 type ScoreCount = {
+  "0": number;
   "1": number;
   "2": number;
   "3": number;
@@ -28,6 +29,7 @@ const countScores = useScoreCount(props.evaluation.sessions[`session_${props.ses
 const percScores = computed(() => {
     const total = Object.values(props.scoreCounts).reduce((sum, value) => sum + value, 0);
   const percentages: ScoreCount = {
+    "0": 0,
     "1": 0,
     "2": 0,
     "3": 0,
@@ -44,6 +46,7 @@ const percScores = computed(() => {
 
 // View state management
 const showAll: Ref<Boolean> = ref(true)
+const showZero: Ref<Boolean> = ref(false)
 const showOne: Ref<Boolean> = ref(false)
 const showTwo: Ref<Boolean> = ref(false)
 const showThree: Ref<Boolean> = ref(false)
@@ -52,8 +55,18 @@ const showFive: Ref<Boolean> = ref(false)
 
 const switchScoreList = (score: number) => {
     switch (score) {
+        case 0:
+            showAll.value = false
+            showZero.value = true
+            showOne.value = false
+            showTwo.value = false
+            showThree.value = false
+            showFour.value = false
+            showFive.value = false
+            break;
         case 1:
             showAll.value = false
+            showZero.value = false
             showOne.value = true
             showTwo.value = false
             showThree.value = false
@@ -62,6 +75,7 @@ const switchScoreList = (score: number) => {
             break;
         case 2:
             showAll.value = false
+            showZero.value = false
             showOne.value = false
             showTwo.value = true
             showThree.value = false
@@ -70,6 +84,7 @@ const switchScoreList = (score: number) => {
             break;
         case 3:
             showAll.value = false
+            showZero.value = false
             showOne.value = false
             showTwo.value = false
             showThree.value = true
@@ -78,6 +93,7 @@ const switchScoreList = (score: number) => {
             break;
         case 4:
             showAll.value = false
+            showZero.value = false
             showOne.value = false
             showTwo.value = false
             showThree.value = false
@@ -86,6 +102,7 @@ const switchScoreList = (score: number) => {
             break;
         case 5:
             showAll.value = false
+            showZero.value = false
             showOne.value = false
             showTwo.value = false
             showThree.value = false
@@ -94,6 +111,7 @@ const switchScoreList = (score: number) => {
             break;
         default:
             showAll.value = true
+            showZero.value = false
             showOne.value = false
             showTwo.value = false
             showThree.value = false
@@ -104,6 +122,7 @@ const switchScoreList = (score: number) => {
 
 // Active state for buttons
 const activeView = computed(() => {
+  if (showZero.value) return 0
   if (showOne.value) return 1
   if (showTwo.value) return 2
   if (showThree.value) return 3
@@ -122,7 +141,31 @@ const activeView = computed(() => {
     </div>
 
     <!-- Score Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
+      <!-- Score 0 Card - Not Evaluated -->
+      <UCard 
+        class="cursor-pointer transition-all duration-300 hover:scale-105"
+        :class="[
+          activeView === 0 
+            ? 'bg-gradient-to-r from-gray-50 to-slate-50 border-2 border-gray-300 shadow-lg' 
+            : 'bg-white border border-gray-200 hover:shadow-md'
+        ]"
+        @click="switchScoreList(0)"
+      >
+        <div class="text-center">
+          <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <UIcon name="i-heroicons-question-mark-circle" class="w-6 h-6 text-gray-600" />
+          </div>
+          <div class="text-sm font-medium text-gray-700 mb-1">Not Evaluated</div>
+          <div class="text-3xl font-bold text-gray-600">{{ countScores.zero }}</div>
+          <div class="text-xs text-gray-500 mt-1">Score 0's</div>
+          <div 
+            v-if="activeView === 0"
+            class="w-16 h-1 bg-gray-500 rounded-full mx-auto mt-2"
+          ></div>
+        </div>
+      </UCard>
+
       <!-- Score 1 Card -->
       <UCard 
         class="cursor-pointer transition-all duration-300 hover:scale-105"
@@ -252,6 +295,7 @@ const activeView = computed(() => {
           <p class="text-sm text-gray-600 mt-1">
             {{
               activeView === 'all' ? 'Overall score distribution' :
+              activeView === 0 ? 'Items not evaluated' :
               activeView === 1 ? 'Items not good' :
               activeView === 2 ? 'Items needing improvement' :
               activeView === 3 ? 'Competent items' :
@@ -265,6 +309,21 @@ const activeView = computed(() => {
           <div class="w-full max-w-md">
             <div v-if="showAll">
               <ScorePie :pieData="props.scoreCounts" :title="`Score Distribution for ${props.tool.toUpperCase()}`" />
+            </div>
+            
+            <div v-if="showZero" class="text-center">
+              <UMeter 
+                icon="i-heroicons-question-mark-circle" 
+                color="gray" 
+                :value="percScores['0']"  
+                label="Percentage of Not Evaluated" 
+                size="xl" 
+                indicator
+                class="mb-4"
+              />
+              <p class="text-sm text-gray-600">
+                {{ percScores['0'] }}% of items could not be evaluated
+              </p>
             </div>
             
             <div v-if="showOne" class="text-center">
@@ -368,6 +427,7 @@ const activeView = computed(() => {
           <h4 class="text-md font-semibold text-gray-900">
             {{
               activeView === 'all' ? 'All Evaluation Items' :
+              activeView === 0 ? 'Not Evaluated Items (Score 0)' :
               activeView === 1 ? 'Not Good Items (Score 1)' :
               activeView === 2 ? 'Needs Improvement Items (Score 2)' :
               activeView === 3 ? 'Competent Items (Score 3)' :
@@ -380,6 +440,9 @@ const activeView = computed(() => {
           </p>
         </template>
 
+        <div v-if="showZero">
+          <ScoreCards :tool="props.tool" :session-index="props.sessionIndex" :evaluation="props.evaluation" score="0" />
+        </div>
         <div v-if="showOne">
           <ScoreCards :tool="props.tool" :session-index="props.sessionIndex" :evaluation="props.evaluation" score="1" />
         </div>
@@ -402,7 +465,12 @@ const activeView = computed(() => {
     </div>
 
     <!-- Quick Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-7 gap-4">
+      <UCard class="text-center bg-gray-50/50">
+        <div class="text-xl font-bold text-gray-600">{{ countScores.zero }}</div>
+        <div class="text-sm text-gray-600 font-medium">Not Evaluated</div>
+      </UCard>
+
       <UCard class="text-center bg-red-50/50">
         <div class="text-xl font-bold text-red-600">{{ countScores.one }}</div>
         <div class="text-sm text-red-600 font-medium">Not Good</div>
@@ -429,7 +497,7 @@ const activeView = computed(() => {
       </UCard>
 
       <UCard class="text-center bg-purple-50/50">
-        <div class="text-xl font-bold text-purple-600">{{ countScores.one + countScores.two + countScores.three + countScores.four + countScores.five }}</div>
+        <div class="text-xl font-bold text-purple-600">{{ countScores.zero + countScores.one + countScores.two + countScores.three + countScores.four + countScores.five }}</div>
         <div class="text-sm text-purple-600 font-medium">Total Items</div>
       </UCard>
     </div>

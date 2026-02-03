@@ -1,6 +1,7 @@
 import type IEvalScore from "@/interfaces/IEvalScore";
 
 export interface ScoreCount {
+    zero: number;
     one: number;
     two: number;
     three: number;
@@ -11,6 +12,7 @@ export interface ScoreCount {
 export function useScoreCount(data: any[]): ScoreCount {
     // Initialize with zeros
     const scoreCount: ScoreCount = {
+        zero: 0,
         one: 0,
         two: 0,
         three: 0,
@@ -41,6 +43,10 @@ export function useScoreCount(data: any[]): ScoreCount {
             const scoreNum = Number(score);
             
             switch (scoreNum) {
+                case 0:
+                    // Score of 0 means item could not be evaluated
+                    scoreCount.zero++;
+                    break;
                 case 1:
                     scoreCount.one++;
                     break;
@@ -58,7 +64,7 @@ export function useScoreCount(data: any[]): ScoreCount {
                     break;
                 default:
                     // Handle scores outside expected range
-                    console.warn('Score outside expected range (1-5):', score);
+                    console.warn('Score outside expected range (0-5):', score);
                     break;
             }
         }

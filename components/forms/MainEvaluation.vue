@@ -148,7 +148,15 @@ const schema = yup.object({
   evalItemScores: yup.array().required().min(0).label("Score"),
 });
 
-// Scoring options
+// Short form scoring options for progress notes reference
+const shortScoringOptions = [
+  { score: 0, label: 'N/E', description: 'Not Evaluated' },
+  { score: 1, label: 'Needs Imp.', description: 'Needs Improvement' },
+  { score: 2, label: 'Basic', description: 'Basic Competency' },
+  { score: 3, label: 'Satisfactory', description: 'Satisfactory' },
+  { score: 4, label: 'Advanced', description: 'Advanced' },
+  { score: 5, label: 'Exceptional', description: 'Exceptional' }
+];
 const scoringOptions: ScoringOption[] = [
   { description: '0 - The competency cannot be evaluated', score: 0, color: 'gray' },
   { description: '1 - Does not demonstrate competency', score: 1, color: 'red' },
@@ -221,6 +229,13 @@ const handleContinueClick = () => {
             {{ evaluationItems?.length || 0 }} Items
           </UBadge>
         </div>
+        <!-- Short Form Scoring Legend for Progress Notes -->
+        <div class="mt-3 flex flex-wrap gap-2 text-xs">
+          <span class="text-gray-500 font-medium">Scoring Key:</span>
+          <UBadge v-for="opt in shortScoringOptions" :key="opt.score" size="xs" :color="getScoreColor(opt.score)" variant="subtle">
+            {{ opt.score }}: {{ opt.label }}
+          </UBadge>
+        </div>
       </template>
 
       <div class="space-y-6">
@@ -291,41 +306,58 @@ const handleContinueClick = () => {
                       </div>
                       
                       <!-- Performance Trend -->
-                      <div class="flex items-center space-x-2">
-                        <div 
-                          v-if="getMostRecentScore(item.number).score === 3" 
-                          class="flex items-center space-x-1 text-green-600"
-                        >
-                          <UIcon name="i-heroicons-trending-up" class="w-4 h-4" />
-                          <span class="text-sm font-medium">Mastered</span>
-                        </div>
-                        <div 
-                          v-else-if="getMostRecentScore(item.number).score === 2" 
-                          class="flex items-center space-x-1 text-blue-600"
-                        >
-                          <UIcon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
-                          <span class="text-sm font-medium">Competent</span>
-                        </div>
-                        <div 
-                          v-else-if="getMostRecentScore(item.number).score === 1" 
-                          class="flex items-center space-x-1 text-orange-600"
-                        >
-                          <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
-                          <span class="text-sm font-medium">Needs Practice</span>
-                        </div>
-                        <div 
-                          v-else 
-                          class="flex items-center space-x-1 text-red-600"
-                        >
-                          <UIcon name="i-heroicons-arrow-trending-down" class="w-4 h-4" />
-                          <span class="text-sm font-medium">Not Observed</span>
-                        </div>
-                      </div>
+                    
                     </div>
                     
                     <!-- Progress Notes -->
                     <div v-if="getMostRecentScore(item.number).notes" class="mt-2 p-2 bg-white rounded border text-sm text-gray-600">
                       <strong>Previous Notes:</strong> {{ getMostRecentScore(item.number).notes }}
+                    </div>
+                    
+                    <!-- Performance Trend Indicators -->
+                    <div class="flex items-center space-x-2 mt-2">
+                      <div 
+                        v-if="getMostRecentScore(item.number).score == 5" 
+                        class="flex items-center space-x-1 text-teal-600"
+                      >
+                        <UIcon name="i-heroicons-star" class="w-4 h-4" />
+                        <span class="text-sm font-medium">Exceptional</span>
+                      </div>
+                      <div 
+                        v-else-if="getMostRecentScore(item.number).score == 4" 
+                        class="flex items-center space-x-1 text-green-600"
+                      >
+                        <UIcon name="i-heroicons-star" class="w-4 h-4" />
+                        <span class="text-sm font-medium">Advanced</span>
+                      </div>
+                      <div 
+                        v-else-if="getMostRecentScore(item.number).score == 3" 
+                        class="flex items-center space-x-1 text-blue-600"
+                      >
+                        <UIcon name="i-heroicons-hand-thumb-up" class="w-4 h-4" />
+                        <span class="text-sm font-medium">Satisfactory</span>
+                      </div>
+                      <div 
+                        v-else-if="getMostRecentScore(item.number).score == 2" 
+                        class="flex items-center space-x-1 text-orange-600"
+                      >
+                        <UIcon name="i-heroicons-check-circle" class="w-4 h-4" />
+                        <span class="text-sm font-medium">Basic</span>
+                      </div>
+                      <div 
+                        v-else-if="getMostRecentScore(item.number).score == 1" 
+                        class="flex items-center space-x-1 text-red-600"
+                      >
+                        <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4" />
+                        <span class="text-sm font-medium">Needs Improvement</span>
+                      </div>
+                      <div 
+                        v-else-if="getMostRecentScore(item.number).score == 0" 
+                        class="flex items-center space-x-1 text-gray-600"
+                      >
+                        <UIcon name="i-heroicons-question-mark-circle" class="w-4 h-4" />
+                        <span class="text-sm font-medium">Not Evaluated</span>
+                      </div>
                     </div>
                   </div>
 

@@ -20,12 +20,19 @@ const goBack = () => {
     router.back();
 };
 
-type ScoreCount = {
-    [key: string]: number;
-};
-
 const scoreList = evaluation.sessions[`session_${sessionIndex}`].evalItemScores
-const scoreCounts: any = useScoreCount(scoreList)
+const scoreCounts = useScoreCount(scoreList)
+
+// Transform scoreCounts to match CardsCompetantScores component's expected format (numeric string keys)
+const scoreCountsNumericKeys = computed(() => ({
+    "0": scoreCounts.zero,
+    "1": scoreCounts.one,
+    "2": scoreCounts.two,
+    "3": scoreCounts.three,
+    "4": scoreCounts.four,
+    "5": scoreCounts.five
+}))
+
 const scoreStatistics = useScoreSimpleStatistics(scoreList)
 
 // Set page metadata
@@ -232,7 +239,7 @@ useSeoMeta({
                 <CardsCompetantScores 
                   :tool="evaluation.tool" 
                   :session-index="sessionIndex" 
-                  :score-counts="scoreCounts"
+                  :score-counts="scoreCountsNumericKeys"
                   :evaluation="evaluation" 
                 />
               </div>

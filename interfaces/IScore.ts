@@ -11,6 +11,8 @@ interface Score {
     sessions: ISession;
     syncStatus?: 'pending' | 'success' | 'failed';
     lastSyncedAt?: number;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 type IScore = Readonly<Score>

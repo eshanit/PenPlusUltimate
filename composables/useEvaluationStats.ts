@@ -2,9 +2,10 @@
 import { computed } from 'vue';
 import type IScore from "@/interfaces/IScore";
 import type IFinalEvaluation from '@/interfaces/IFinalEvaluation';
+import type IEvaluationStats from "~/interfaces/IEvaluationStats";
 
 
-export function useEvaluationStats(evaluations :IScore[] | IFinalEvaluation[]) {
+export function useEvaluationStats(evaluations :IScore[] | IFinalEvaluation[]) : IEvaluationStats {
   // Filter evaluations where at least one session has been completed (has evalItemScores)
   const completedEvaluations = evaluations.filter((evaluation) => {
     const sessions = evaluation.sessions;
@@ -55,7 +56,7 @@ export function useEvaluationStats(evaluations :IScore[] | IFinalEvaluation[]) {
         if (session && session.evalItemScores) {
           // Sum up scores for each evaluation item in the session
           session.evalItemScores.forEach((item) => {
-            const score = parseInt(item.score, 10);
+            const score = parseInt(String(item.score), 10);
             if (!isNaN(score)) {
               totalScore += score;
               totalItems++;
@@ -71,10 +72,10 @@ export function useEvaluationStats(evaluations :IScore[] | IFinalEvaluation[]) {
 
   return {
     overallMeanScore,
-    completedEvaluations, // Optional: Return filtered evaluations for debugging or further use
-    completed4Evals,
-    completed3Evals,
-    completed2Evals,
-    completed1Evals
+    completedEvaluations: completedEvaluations as IFinalEvaluation[],
+    completed4Evals: completed4Evals as IFinalEvaluation[],
+    completed3Evals: completed3Evals as IFinalEvaluation[],
+    completed2Evals: completed2Evals as IFinalEvaluation[],
+    completed1Evals: completed1Evals as IFinalEvaluation[]
   };
 }

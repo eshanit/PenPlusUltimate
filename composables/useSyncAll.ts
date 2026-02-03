@@ -13,7 +13,7 @@ const useSyncAll = async () => {
     ];
 
     const results = await Promise.allSettled(
-        databases.map(db => useManualSync(db, 'from'))
+        databases.map(db => useManualSync(db))
     );
 
     const successful = results.filter(r => r.status === 'fulfilled').length;

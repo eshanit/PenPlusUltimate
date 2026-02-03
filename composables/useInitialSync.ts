@@ -24,7 +24,7 @@ const useInitialSync = async () => {
       databases.map(db => 
         new Promise(async (resolve) => {
           try {
-            const result = await useManualSync(db, 'from');
+            const result = await useManualSync(db);
             resolve(result);
           } catch (error) {
             // Even on error, continue with app (data might be cached)

@@ -1,4 +1,5 @@
 import { useLocalStorage, useStorage, type RemovableRef } from "@vueuse/core";
+import { navigateTo } from '#app'; // Add this import
 import type IEvalScore from "@/interfaces/IEvalScore";
 import pouchDBConnect from "@/utilities/pouchDbConnect";
 import type IFinalEvaluation from "@/interfaces/IFinalEvaluation";
@@ -8,333 +9,351 @@ import cleanLocalStorage from "@/utilities/cleanLocalStorage";
 import Routes from "@/constants/Routes";
 import processScores from "@/utilities/processScores";
 import processEchoScores from "@/utilities/processEchoScores";
-
+import useReplicateToCouchDB from "@/composables/useReplicateToCouchDB";
 
 const dbEvals = pouchDBConnect(DatabaseNames.COMPLETED_EVALUTATIONS);
 const dbIncompleteEvals = pouchDBConnect(DatabaseNames.INCOMPLETE_EVALUATIONS);
 
+// Track sync status
+let isSyncing = false;
+const pendingSyncDocs = new Set<string>();
+
+const syncEvaluationsToServer = async () => {
+  if (isSyncing) {
+    console.log('Evaluations sync already in progress, skipping...');
+    return null;
+  }
+  isSyncing = true;
+  try {
+    const result = await useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
+    if (result && typeof result.on === 'function') {
+      return new Promise<void>((resolve) => {
+        result.on("complete", () => {
+          console.log('Evaluations synced successfully');
+          isSyncing = false;
+          resolve();
+        });
+        result.on("error", (err: any) => {
+          console.error('Evaluations sync error:', err);
+          isSyncing = false;
+          resolve();
+        });
+      });
+    }
+    isSyncing = false;
+    return null;
+  } catch (error) {
+    console.error('Evaluations sync failed:', error);
+    isSyncing = false;
+    return null;
+  }
+};
+
+// Improved updateDocSyncStatus with retry logic
+const updateDocSyncStatus = async (docId: string, status: 'pending' | 'success' | 'failed', retryCount = 0): Promise<void> => {
+  const maxRetries = 3;
+  
+  try {
+    const doc = await dbEvals.get(docId);
+    const updatedDoc = {
+      ...doc,
+      syncStatus: status,
+      ...(status === 'success' ? { lastSyncedAt: Date.now() } : {})
+    };
+    
+    await dbEvals.put(updatedDoc);
+  } catch (err: any) {
+    console.error(`Failed to update sync status for ${docId}:`, err);
+    
+    // Retry on conflict
+    if (err.status === 409 && retryCount < maxRetries) {
+      console.log(`Retrying sync status update for ${docId} (attempt ${retryCount + 1})`);
+      await new Promise(resolve => setTimeout(resolve, 100 * (retryCount + 1)));
+      return updateDocSyncStatus(docId, status, retryCount + 1);
+    }
+  }
+};
+
+// Helper function for background sync
+const triggerBackgroundSync = async (docId: string): Promise<void> => {
+  try {
+    // Mark as pending first
+    await updateDocSyncStatus(docId, 'pending');
+    
+    // Add to pending set
+    pendingSyncDocs.add(docId);
+    
+    // Debounced sync - wait a bit before syncing to batch multiple updates
+    setTimeout(async () => {
+      if (pendingSyncDocs.has(docId)) {
+        try {
+          const syncResult = await syncEvaluationsToServer();
+          if (syncResult) {
+            await syncResult;
+            await updateDocSyncStatus(docId, 'success');
+          } else {
+            // Try direct replication as fallback
+            const result = await useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
+            if (result && typeof result.on === 'function') {
+              result.on("complete", () => updateDocSyncStatus(docId, 'success'));
+              result.on("error", () => updateDocSyncStatus(docId, 'failed'));
+            } else {
+              await updateDocSyncStatus(docId, 'success');
+            }
+          }
+        } catch (syncError) {
+          console.error('Background sync error:', syncError);
+          await updateDocSyncStatus(docId, 'failed');
+        } finally {
+          pendingSyncDocs.delete(docId);
+        }
+      }
+    }, 1000); // 1 second debounce
+  } catch (error) {
+    console.error('Error triggering background sync:', error);
+  }
+};
+
 export const useEvalDataStore = defineStore("evaluations", () => {
   const vm: IEvalScore[] = [];
-
   let vn: any;
-
-  const vo: any[] = []
-
+  const vo: any[] = [];
+  
   const evaluationScores: RemovableRef<any> = useStorage(LocalStorageKeys.EVALUATION_SCORES, vm);
-
   const menteeEvalReportData = useStorage(LocalStorageKeys.MENTEE_EVALUATION_REPORT_DATA, vn);
-
-  const allEvaluationScores = ref()
-
-
-  /**
-   * 
-   * @param dbName 
-   * @returns all evaluation scores in the database
-   */
+  const allEvaluationScores = ref();
 
   const fetchEvaluationScores = async (dbName: string): Promise<Array<IFinalEvaluation> | any> => {
-
-    const user: any = useProcessLocalStorage().retrieve(LocalStorageKeys.PROFILE)
-
+    const user: any = useProcessLocalStorage().retrieve(LocalStorageKeys.PROFILE);
     let db: PouchDB.Database<any>;
 
     if (dbName === DatabaseNames.COMPLETED_EVALUTATIONS) {
-
       db = dbEvals;
-
     } else {
-      db = dbIncompleteEvals
-
+      db = dbIncompleteEvals;
     }
 
-    const evals = await db.allDocs({ include_docs: true }).then((response) => {
+    try {
+      const response = await db.allDocs({ include_docs: true });
       let vm: any[] = [];
       for (var i = 0; i < response.rows.length; i++) {
         vm.push(response.rows[i].doc);
       }
 
-      //console.log('vm:',vm);
-
       let newArray = vm.filter(function (el) {
-        // return el.evaluator.searchIndex == user.searchIndex;
-        return el.tool !== undefined
+        return el.tool !== undefined;
       });
 
-
-
+      allEvaluationScores.value = newArray;
       return newArray;
+    } catch (err: unknown) {
+      console.error('fetch all scores error', err);
+      return [];
+    }
+  };
 
-    }).catch((err: Error) => {
-      console.error('fetch all scores error', err)
-      // return ['Could not fetch evaluation scores, please try again or contact the administrator']
-    })
-
-    allEvaluationScores.value = evals
-
-    //console.log('all scores', evals)
-    return evals
-
-  }
-
-  /** fetch District Scores */
-
-
-
-  /**
-   * 
-   * @param tool 
-   * @returns stores scores
-   */
-
-  const storeScores = async (tool: string | string[]) => {
-    const scoreData = processScores(tool)
-
-    const storeStatus = await dbEvals.put(scoreData).then(async (response: { ok: boolean }) => {
+  const storeScores = async (tool: string | string[]): Promise<any> => {
+    try {
+      const scoreData = processScores(tool);
+      
+      // Create document with timestamps
+      const docToStore = {
+        ...scoreData,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        syncStatus: 'pending' as const
+      };
+      
+      // Store in database
+      const response = await dbEvals.put(docToStore);
+      
       if (response.ok) {
-        // Attempt to sync in background without blocking submission
-        (async () => {
-          try {
-            const syncResult = await useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
-
-            // Check if syncResult is a valid replication object
-            if (syncResult && typeof syncResult === 'object') {
-              // Set initial sync status to pending
-              dbEvals.get(scoreData._id).then((doc: any) => {
-                doc.syncStatus = 'pending';
-                dbEvals.put(doc);
-              });
-
-              // Handle sync completion asynchronously
-              // Check if it's a PouchDB replication object
-              if (typeof syncResult.on === 'function') {
-                syncResult
-                  .on("complete", () => {
-                    // Update sync status to success
-                    dbEvals.get(scoreData._id).then((doc: any) => {
-                      doc.syncStatus = 'success';
-                      doc.lastSyncedAt = Date.now();
-                      dbEvals.put(doc);
-                    });
-                  })
-                  .on("error", (err: any) => {
-                    // Update sync status to failed
-                    dbEvals.get(scoreData._id).then((doc: any) => {
-                      doc.syncStatus = 'failed';
-                      dbEvals.put(doc);
-                    });
-                  });
-              } else {
-                // If not a PouchDB replication object, assume sync completed
-                console.warn('syncResult is not a PouchDB replication object, assuming sync completed');
-                dbEvals.get(scoreData._id).then((doc: any) => {
-                  doc.syncStatus = 'success';
-                  doc.lastSyncedAt = Date.now();
-                  dbEvals.put(doc);
-                });
-              }
-            }
-          } catch (syncError) {
-            console.error('Sync setup failed:', syncError);
-            // Set sync status to failed
-            dbEvals.get(scoreData._id).then((doc: any) => {
-              doc.syncStatus = 'failed';
-              dbEvals.put(doc);
-            });
-          }
-        })();
-
-        cleanLocalStorage()
-        navigateTo(Routes.SCORE_SUBMIT_SUCCESS)
+        // Trigger background sync
+        await triggerBackgroundSync(docToStore._id);
+        
+        // Clean up and navigate
+        cleanLocalStorage();
+        navigateTo(Routes.SCORE_SUBMIT_SUCCESS);
+        return response;
       }
-
-      return response;
-    })
-      .catch((error: any) => {
-        console.error('Error storing scores:', error);
-        throw error;
-      });
-
-    return storeStatus
-  }
-
-  /**
-   * @param
-   * @returns {Promise<boolean|String>} 
-   * create another session
-   */
-
-  const createSessionEval = async (): Promise<Boolean | String> => {
-    const databaseScores: any = useProcessLocalStorage().retrieve(LocalStorageKeys.DATABASE_SCORE);
-    const currentSession: any = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION);
-    const scores: any = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES);
-    const tool: any = useProcessLocalStorage().retrieve(LocalStorageKeys.DATABASE_SCORE_TOOL);
-
-    const sessionKey = `session_${currentSession}`;
-    const echoData = tool === 'echo' ? processEchoScores() : scores;
-
-    databaseScores.sessions[sessionKey] = echoData;
-
-    return await dbEvals.put(databaseScores).then(async (response: { ok: boolean }) => {
-      if (response.ok === true) {
-        // Attempt to sync in background without blocking submission
-        (async () => {
-          try {
-            const syncResult = await useReplicateToCouchDB(DatabaseNames.COMPLETED_EVALUTATIONS);
-
-            // Check if syncResult is a valid object
-            if (syncResult && typeof syncResult === 'object') {
-              // Set initial sync status to pending
-              dbEvals.get(databaseScores._id).then((doc: any) => {
-                doc.syncStatus = 'pending';
-                dbEvals.put(doc);
-              });
-
-              // Handle sync completion asynchronously
-              // Check if it's a PouchDB replication object with .on method
-              if (typeof syncResult.on === 'function') {
-                syncResult
-                  .on("complete", () => {
-                    // Update sync status to success
-                    dbEvals.get(databaseScores._id).then((doc: any) => {
-                      doc.syncStatus = 'success';
-                      doc.lastSyncedAt = Date.now();
-                      dbEvals.put(doc);
-                    });
-                  })
-                  .on("error", (err: any) => {
-                    // Update sync status to failed
-                    dbEvals.get(databaseScores._id).then((doc: any) => {
-                      doc.syncStatus = 'failed';
-                      dbEvals.put(doc);
-                    });
-                  });
-              } else {
-                // If not a PouchDB replication object, assume sync completed
-                console.warn('syncResult is not a PouchDB replication object, assuming sync completed');
-                dbEvals.get(databaseScores._id).then((doc: any) => {
-                  doc.syncStatus = 'success';
-                  doc.lastSyncedAt = Date.now();
-                  dbEvals.put(doc);
-                });
-              }
-            }
-          } catch (syncError) {
-            console.error('Sync setup failed:', syncError);
-            // Set sync status to failed
-            dbEvals.get(databaseScores._id).then((doc: any) => {
-              doc.syncStatus = 'failed';
-              dbEvals.put(doc);
-            });
-          }
-        })();
-
-        cleanLocalStorage()
-        navigateTo(Routes.SCORE_SUBMIT_SUCCESS)
+    } catch (error: any) {
+      console.error('Error storing scores:', error);
+      
+      // Handle conflict - generate new ID
+      if (error.status === 409) {
+        const scoreData = processScores(tool);
+        const newDoc = {
+          ...scoreData,
+          _id: `${scoreData._id}_${Date.now()}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          syncStatus: 'pending' as const,
+          wasConflicted: true // Flag for debugging
+        };
+        
+        const response = await dbEvals.put(newDoc);
+        if (response.ok) {
+          await triggerBackgroundSync(newDoc._id);
+          cleanLocalStorage();
+          navigateTo(Routes.SCORE_SUBMIT_SUCCESS);
+          return response;
+        }
       }
-      return response.ok;
-    }).catch((error: Error) => {
-      console.error('Error creating new session scores:', error);
-      return error.message
-    });
-  }
+      
+      throw error;
+    }
+  };
 
+  const createSessionEval = async (): Promise<boolean | string> => {
+    try {
+      const currentSession: any = useProcessLocalStorage().retrieve(LocalStorageKeys.EVALUATION_SESSION);
+      const scores: any = useProcessLocalStorage().retrieve(LocalStorageKeys.SCORES);
+      const tool: any = useProcessLocalStorage().retrieve(LocalStorageKeys.DATABASE_SCORE_TOOL);
+      
+      // Get the document ID from localStorage
+      const databaseScoresFromStorage: any = useProcessLocalStorage().retrieve(LocalStorageKeys.DATABASE_SCORE);
+      const docId = databaseScoresFromStorage._id;
+      
+      if (!docId) {
+        throw new Error('No document ID found in localStorage');
+      }
+      
+      const sessionKey = `session_${currentSession}`;
+      const echoData = tool === 'echo' ? processEchoScores() : scores;
+      
+      // Fetch the LATEST version from the database
+      let doc: any;
+      try {
+        doc = await dbEvals.get(docId);
+      } catch (error: any) {
+        if (error.status === 404) {
+          console.error('Document not found, recreating from localStorage');
+          doc = databaseScoresFromStorage;
+        } else {
+          throw error;
+        }
+      }
+      
+      // Update the document with the new session
+      doc.sessions = doc.sessions || {};
+      doc.sessions[sessionKey] = echoData;
+      doc.updatedAt = new Date().toISOString();
+      
+      // Remove any _conflicts array to prevent issues
+      if (doc._conflicts) {
+        delete doc._conflicts;
+      }
+      
+      // Use retry mechanism for conflicts
+      const maxRetries = 3;
+      
+      for (let retryCount = 0; retryCount < maxRetries; retryCount++) {
+        try {
+          const response = await dbEvals.put(doc);
+          
+          if (response.ok) {
+            // Trigger background sync
+            await triggerBackgroundSync(doc._id);
+            
+            cleanLocalStorage();
+            navigateTo(Routes.SCORE_SUBMIT_SUCCESS);
+            return true;
+          }
+        } catch (error: any) {
+          if (error.status === 409 && retryCount < maxRetries - 1) {
+            console.log(`Conflict detected, retry ${retryCount + 1}/${maxRetries}`);
+            
+            // Fetch latest version and merge
+            try {
+              const latestDoc = await dbEvals.get(docId);
+              
+              // Merge sessions
+              latestDoc.sessions = latestDoc.sessions || {};
+              latestDoc.sessions[sessionKey] = echoData;
+              latestDoc.updatedAt = new Date().toISOString();
+              
+              // Remove conflicts
+              if (latestDoc._conflicts) {
+                delete latestDoc._conflicts;
+              }
+              
+              doc = latestDoc;
+              
+              // Wait before retry
+              await new Promise(resolve => setTimeout(resolve, 100 * (retryCount + 1)));
+            } catch (fetchError) {
+              console.error('Error fetching latest document for retry:', fetchError);
+              break;
+            }
+          } else {
+            // Not a conflict or max retries reached
+            console.error('Error creating new session scores:', error);
+            return error?.message || 'Failed to create session';
+          }
+        }
+      }
+      
+      return 'Failed to create session after retries';
+      
+    } catch (error: any) {
+      console.error('Error in createSessionEval:', error);
+      return error.message || 'Unknown error';
+    }
+  };
 
-  /**
-   * 
-   * @param scoreId 
-   * @returns evaluations for a particular score
-   */
-
+  // Other functions remain the same...
   const fetchUserEval = async (scoreId: string): Promise<any> => {
-
     return await dbEvals.get(scoreId).then((response) => {
-      return response
+      return response;
     }).catch((error: Error) => {
+      console.error('Error fetching user eval:', error);
       return false;
-    })
-  }
-
-  /**
- * 
- * @param district
- * @returns evaluations for a particular district
- */
+    });
+  };
 
   const fetchDistrictEvaluations = async (district: string): Promise<any> => {
-
     return await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS).then((response) => {
-
       return response.filter(function (el: { mentee: any; }) {
-        // return el.evaluator.searchIndex == user.searchIndex;
         return el.mentee.district == district;
       });
-
-
     });
-
-  }
-
-
-  /**
- * 
- * @param facility
- * @returns evaluations for a particular facility
- */
+  };
 
   const fetchFacilityEvaluations = async (facility: string): Promise<any> => {
-
     return await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS).then((response) => {
-
-
-      //console.log(response)
-
       return response.filter(function (el: { mentee: any; }) {
-        // return el.evaluator.searchIndex == user.searchIndex;
         return el.mentee.facility == facility;
       });
-
-
     });
-
-  }
-
-  /**
-* 
-* @param menteeId
-* @returns evaluations for a particular mentee
-*/
+  };
 
   const fetchMenteeEvals = async (menteeId: string): Promise<any> => {
-
     return await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS).then((response) => {
-      //console.log(response)
       return response.filter(function (el: { mentee: any; }) {
-        // return el.evaluator.searchIndex == user.searchIndex;
         return el.mentee._id == menteeId;
       });
-
     });
-  }
-
-
-  /**
-   * @param tool
-   * 
-   * @returns evaluations for a particular tool
-   */
+  };
 
   const fetchToolEvals = async (tool: string): Promise<any> => {
-
     return await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS).then((response) => {
-      //console.log(response)
       return response.filter(function (el: { tool: any; }) {
-        // return el.evaluator.searchIndex == user.searchIndex;
         return el.tool == tool;
       });
-
     });
-  }
+  };
 
-  return { evaluationScores, menteeEvalReportData, allEvaluationScores, fetchToolEvals, fetchMenteeEvals, fetchFacilityEvaluations, fetchDistrictEvaluations, storeScores, fetchEvaluationScores, fetchUserEval, createSessionEval };
+  return { 
+    evaluationScores, 
+    menteeEvalReportData, 
+    allEvaluationScores, 
+    fetchToolEvals, 
+    fetchMenteeEvals, 
+    fetchFacilityEvaluations, 
+    fetchDistrictEvaluations, 
+    storeScores, 
+    fetchEvaluationScores, 
+    fetchUserEval, 
+    createSessionEval 
+  };
 });

@@ -1,6 +1,8 @@
 interface EvalScore {
   name: string;
   score: number;
+  category?: string;
+  item?: string;
   notes?: string;
 }
 
