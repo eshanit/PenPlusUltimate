@@ -31,8 +31,10 @@ const useReplicateDB = async (databaseName: string, direction: 'from' | 'to'): P
     retry: true,
     // Back off gradually to prevent rapid re-syncs
     back_off: 1000,
-    // Don't create target automatically for 'to' direction
-    create_target: direction === 'from',
+    // CRITICAL: Never create target automatically in CouchDB 3.x cluster mode
+    // Creating databases via PouchDB doesn't register them in the _dbs metadata
+    // Databases must be created via CouchDB API or Fauxton first
+    create_target: false,
   };
 
   // sync
