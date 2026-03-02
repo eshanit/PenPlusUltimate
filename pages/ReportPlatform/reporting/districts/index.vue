@@ -3,7 +3,7 @@ import DatabaseNames from "@/constants/DatabaseNames";
 import sumArray from "@/utilities/sumArray";
 import type IDistrict from "@/interfaces/IDistrict";
 import { computedAsync } from "@vueuse/core";
-import type IEvalScore from "@/interfaces/IEvalScore";
+
 
 const router = useRouter();
 
@@ -61,7 +61,7 @@ computedAsync(() => {
                     facilityEvalCounts.value.push({
                         district: d.district,
                         facility: el,
-                        completedEvals: useCountFacilitySessionsCompleted(el, evaluationStats).allCompletedCount,
+                        completedEvals: useCountFacilitySessionsCompleted(el, evaluationStats).fiveCompletedCount,
                         fourCompletedEvals: useCountFacilitySessionsCompleted(el, evaluationStats).fourCompletedCount,
                         threeCompletedEvals: useCountFacilitySessionsCompleted(el, evaluationStats).threeCompletedCount,
                         twoCompletedEvals: useCountFacilitySessionsCompleted(el, evaluationStats).twoCompletedCount,
@@ -127,6 +127,14 @@ const viewFacilityReport = (facility: string): void => {
 
 const viewCompletedEvals = (district: string): void => {
     navigateTo(`districts/${district}/completed`)
+}
+
+const viewFourCompletedEvals = (district: string): void => {
+    navigateTo(`districts/${district}/fourcompleted`)
+}
+
+const viewThreeCompletedEvals = (district: string): void => {
+    navigateTo(`districts/${district}/threecompleted`)
 }
 
 const viewTwoCompletedEvals = (district: string): void => {
@@ -445,7 +453,7 @@ useSeoMeta({
                   color="yellow" 
                   variant="soft" 
                   size="sm"
-                  @click="viewOneCompletedEvals(district.district)"
+                  @click="viewThreeCompletedEvals(district.district)"
                   class="hover:scale-105 transition-transform duration-200 w-full"
                 >
                   {{ sumArray(filterDistrictEvals(district.district), 'threeCompletedEvals') }}
@@ -457,7 +465,7 @@ useSeoMeta({
                   color="lime" 
                   variant="soft" 
                   size="sm"
-                  @click="viewTwoCompletedEvals(district.district)"
+                  @click="viewFourCompletedEvals(district.district)"
                   class="hover:scale-105 transition-transform duration-200 w-full"
                 >
                   {{ sumArray(filterDistrictEvals(district.district), 'fourCompletedEvals') }}

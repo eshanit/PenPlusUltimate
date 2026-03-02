@@ -5,6 +5,7 @@ import LocalStorageKeys from "@/constants/LocalStorageKeys";
 import DatabaseNames from "@/constants/DatabaseNames";
 import Routes from "@/constants/Routes";
 import useReplicateToCouchDB from "@/composables/useReplicateToCouchDB";
+import { useProcessLocalStorage } from "@/composables/useLocalStorage";
 
 const db = pouchDBConnect(DatabaseNames.MENTEES);
 const facility = localStorage.getItem(LocalStorageKeys.SELECTED_FACILITY);
@@ -46,26 +47,31 @@ const syncToServer = async () => {
   }
 };
 
+
 export const useMenteeStore = defineStore("mentees", () => {
-  const mentees = ref();
+  const mentees = ref<IMasterUser[]>();
 
   //fetch all mentes
 
-  const fetchMentees = async (): Promise<Array<Object> | void> => {
-    const dbMentees = await db.allDocs({ include_docs: true }).then(function (response) {
-        let vm = [];
+  const fetchMentees = async (): Promise<IMasterUser[] | void> => {
+    const dbMentees = await db.allDocs({ include_docs: true }).then(function (response): IMasterUser[] {
+        let vm: IMasterUser[] = [];
         for (var i = 0; i < response.rows.length; i++) {
-          vm.push(response.rows[i].doc);
+          const row = response.rows[i];
+          if (row?.doc) {
+            vm.push(row.doc as IMasterUser);
+          }
         }
 
         let newArray = vm.filter(function (el) {
-          return el.firstname != undefined;
+          return el.firstname !== undefined;
         });
 
         return newArray;
       })
       .catch(function (err: Error) {
         console.error("fetch mentees error", err);
+        return [];
       });
 
     mentees.value = dbMentees;
@@ -82,7 +88,10 @@ export const useMenteeStore = defineStore("mentees", () => {
         let facilityFiltered: any[] = [];
 
         for (var i = 0; i < response.rows.length; i++) {
-          vm.push(response.rows[i].doc);
+          const row = response.rows[i];
+          if (row?.doc) {
+            vm.push(row.doc);
+          }
         }
 
         facilityFiltered = vm.filter(function (value) {
@@ -109,7 +118,10 @@ export const useMenteeStore = defineStore("mentees", () => {
         let districtFiltered: any[] = [];
 
         for (var i = 0; i < response.rows.length; i++) {
-          vm.push(response.rows[i].doc);
+          const row = response.rows[i];
+          if (row?.doc) {
+            vm.push(row.doc);
+          }
         }
 
         districtFiltered = vm.filter(function (value) {
@@ -189,8 +201,13 @@ export const useMenteeStore = defineStore("mentees", () => {
 
     const selectedId = localStorage.getItem(LocalStorageKeys.CHECKED_MENTEE)
 
+    if (!selectedId || !mentees.value) {
+      console.error('No mentee selected or mentees not loaded');
+      return;
+    }
+
     const result = mentees.value.find(
-      (mentee: { _id: any }) => mentee._id === selectedId
+      (mentee: IMasterUser) => mentee._id === selectedId
     );
 
     useProcessLocalStorage().store(LocalStorageKeys.EVALUATED_MENTEE, result)

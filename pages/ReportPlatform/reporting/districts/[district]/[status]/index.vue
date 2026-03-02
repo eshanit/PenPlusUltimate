@@ -1,22 +1,35 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router';
 import DatabaseNames from "@/constants/DatabaseNames";
 import capitalizeFirstLetter from "@/utilities/capitalizeFirstLetter";
 
 const route = useRoute();
 const router = useRouter();
-const district = route.params.district
-const status = route.params.status
+
+// Use reactive refs for route parameters to ensure reactivity
+const district = ref(route.params['district'] as string);
+const status = ref(route.params['status'] as string);
 
 const showTool = ref(false);
 const completedEvals: any = ref([]);
+const districtFacilities: any = ref([]);
 
 const useEvaluations = useEvalDataStore();
+const useDistricts = useDistrictsStore();
+
+// Fetch district data to get facilities list
+const fetchDistrictFacilities = async () => {
+    const districts: any = await useDistricts.fetchDistricts();
+    const districtData = districts.find((el: any) => el.district === district.value);
+    districtFacilities.value = districtData?.facilities || [];
+    console.log('District facilities:', districtFacilities.value);
+};
 
 // Fetch data on component mount
 onMounted(async () => {
     console.log('Component mounted, fetching data...');
+    await fetchDistrictFacilities();
     completedEvals.value = await useEvaluations.fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS);
 });
 
@@ -25,6 +38,10 @@ watch(
     () => route.params,
     async (newParams) => {
         console.log('Route params changed:', newParams);
+        // Update reactive refs when route params change
+        district.value = newParams['district'] as string;
+        status.value = newParams['status'] as string;
+        await fetchDistrictFacilities();
         completedEvals.value = await useEvaluations.fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS);
     },
     { immediate: true }
@@ -33,6 +50,10 @@ watch(
 // Handle route updates
 onBeforeRouteUpdate(async (to, from, next) => {
     console.log('Route updated, fetching data...');
+    // Update reactive refs when route params change
+    district.value = to.params['district'] as string;
+    status.value = to.params['status'] as string;
+    await fetchDistrictFacilities();
     completedEvals.value = await useEvaluations.fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS);
     next();
 });
@@ -43,20 +64,25 @@ const goBack = () => {
 
 const toolsEvals = computed(() => {
     const evaluationStats = useEvaluationStats(completedEvals.value);
+    const facilities = districtFacilities.value;
     let evals;
 
-    if (status == 'completed') {
-        evals = evaluationStats.completedEvaluations.filter((el) => el.mentee.district == district);
-    } else if (status == 'fourcompleted') {
-        evals = evaluationStats.completed4Evals.filter((el) => el.mentee.district == district);
-    } else if (status == 'threecompleted') {
-        evals = evaluationStats.completed3Evals.filter((el) => el.mentee.district == district);
-    } else if (status == 'twocompleted') {
-        evals = evaluationStats.completed2Evals.filter((el) => el.mentee.district == district);
-    } else if (status == 'onecompleted') {
-        evals = evaluationStats.completed1Evals.filter((el) => el.mentee.district == district);
+    // Filter by facilities in the district
+    const filterByDistrict = (el: any) => facilities.includes(el.mentee.facility);
+
+    if (status.value == 'completed') {
+        //evals = evaluationStats.completedEvaluations.filter(filterByDistrict);
+        evals = evaluationStats.completed5Evals.filter(filterByDistrict);
+    } else if (status.value == 'fourcompleted') {
+        evals = evaluationStats.completed4Evals.filter(filterByDistrict);
+    } else if (status.value == 'threecompleted') {
+        evals = evaluationStats.completed3Evals.filter(filterByDistrict);
+    } else if (status.value == 'twocompleted') {
+        evals = evaluationStats.completed2Evals.filter(filterByDistrict);
+    } else if (status.value == 'onecompleted') {
+        evals = evaluationStats.completed1Evals.filter(filterByDistrict);
     } else {
-        evals = completedEvals.value.filter((el: any) => el.mentee.district == district);
+        evals = completedEvals.value.filter((el: any) => filterByDistrict(el));
     }
 
     return evals;

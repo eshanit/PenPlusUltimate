@@ -8,18 +8,21 @@ const db = pouchDBConnect(DatabaseNames.DISTRICTS);
 
 export const useDistrictsStore = defineStore("districts", () => {
 
-  const districts = ref();
+  const districts = ref<IDistrict[] | undefined>(undefined);
 
   const fetchDistricts = async (): Promise<Array<IDistrict> | any> => {
 
     const dbDistricts = await db.allDocs({ include_docs: true }).then(function (response) {
-        let vm = [];
-        for (var i = 0; i < response.rows.length; i++) {
-          vm.push(response.rows[i].doc);
+        const vm: IDistrict[] = [];
+        for (let i = 0; i < response.rows.length; i++) {
+          const row = response.rows[i];
+          if (row?.doc) {
+            vm.push(row.doc as IDistrict);
+          }
         }
 
-        let newArray = vm.filter(function (el) {
-          return el.district != undefined;
+        const newArray = vm.filter(function (el): el is IDistrict {
+          return el != null && el.district != undefined;
         });
 
         return newArray;
@@ -27,6 +30,7 @@ export const useDistrictsStore = defineStore("districts", () => {
       })
       .catch(function (err: Error) {
         console.error("fetch districts error", err);
+        return [];
       });
 
     districts.value = dbDistricts;

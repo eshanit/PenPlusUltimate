@@ -7,7 +7,7 @@ import { useScoreStatistics } from "@/composables/useScoreStatistics";
 import type { ScoreCount } from "@/composables/useScoreCount";
 import { useEvalDataStore } from "@/stores/evaluations";
 import { useEvaluation } from "@/composables/useEvaluation";
-import { useProcessLocalStorage } from "@/composables/useProcessLocalStorage";
+import { useProcessLocalStorage } from "@/composables/useLocalStorage";
 
 // State and data
 const route = useRoute()

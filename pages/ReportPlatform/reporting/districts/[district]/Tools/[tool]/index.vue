@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type IScore from "@/interfaces/IScore";
+import type IEvalScore from "@/interfaces/IEvalScore";
 
 
 const route = useRoute()
-const tool: any = route.params.tool
-const district: any = route.params.district
+const tool: any = route.params['tool']
+const district: any = route.params['district']
 
 const router = useRouter();
 
@@ -12,28 +13,37 @@ const goBack = () => {
     router.back();
 };
 
+// Get facilities for this district
+const useDistricts = useDistrictsStore();
+const districts: any = await useDistricts.fetchDistricts();
+const districtData = districts.find((el: any) => el.district === district)
+const facilities = districtData?.facilities || []
+
 const useEvaluations = useEvalDataStore();
 
-const districtEvals: IScore[] = await useEvaluations.fetchDistrictEvaluations(district)
+const districtEvals: IScore[] = await useEvaluations.fetchDistrictEvaluations(facilities)
 
 //
-const toolEvals = computed(() => {
-    return districtEvals.filter((el: any) => {
+const toolEvals = computed((): IScore[] => {
+    return districtEvals.filter((el) => {
         return el.tool == tool
     })
 })
 
 //simple statistucs
 
-const toolScoresList = computed(() => {
+const toolScoresList = computed((): IEvalScore[] => {
     const data = toolEvals.value.map(t => t.sessions)
 
-    return data.map(session => {
+    const result = data.map(session => {
         return Object.values(session) // Get values of the session object
             .filter(sessionData => sessionData && sessionData.evalItemScores) // Filter out null values
-            .flatMap(sessionData => sessionData?.evalItemScores); // Flatten the array of evalItemScores
+            .flatMap(sessionData => sessionData?.evalItemScores ?? []); // Flatten the array of evalItemScores
     })
-        .flat();
+        .flat()
+        .filter((score): boolean => score !== null && score !== undefined); // Filter out null/undefined values
+    
+    return result as IEvalScore[];
 })
 
 
@@ -80,7 +90,7 @@ const scoreStatistics = useScoreSimpleStatistics(toolScoresList.value)
 
         </p>
         <div class="py-5">
-            <UButton variant="outline" color="red" label="Download" @click="useDownloadEvaluations(toolEvals)" />
+            <UButton variant="outline" color="red" label="Download" @click="useDownloadEvaluations(toolEvals as any)" />
         </div>
         <UDivider class="py-5" label="Score Simple Statistics" />
 

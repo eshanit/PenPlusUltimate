@@ -29,8 +29,8 @@ const countToolSessions = computed(()=> {
         label: tool.label,
         name: tool.name,
         fiveCompleted: countSessions.allCompletedCount,
-        fourCompleted: countSessions.fourCompleted,
-        threeCompleted: countSessions.threeCompleted,
+        fourCompleted: countSessions.fourCompletedCount,
+        threeCompleted: countSessions.threeCompletedCount,
         twoCompleted: countSessions.twoCompletedCount,
         oneCompleted: countSessions.oneCompletedCount,
         totalCompleted: countSessions.totalCompletedCount

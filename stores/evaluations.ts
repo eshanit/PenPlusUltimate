@@ -137,11 +137,14 @@ export const useEvalDataStore = defineStore("evaluations", () => {
       const response = await db.allDocs({ include_docs: true });
       let vm: any[] = [];
       for (var i = 0; i < response.rows.length; i++) {
-        vm.push(response.rows[i].doc);
+        const doc = response.rows[i]?.doc;
+        if (doc) {
+          vm.push(doc);
+        }
       }
 
       let newArray = vm.filter(function (el) {
-        return el.tool !== undefined;
+        return el && el.tool !== undefined;
       });
 
       allEvaluationScores.value = newArray;
@@ -311,10 +314,10 @@ export const useEvalDataStore = defineStore("evaluations", () => {
     });
   };
 
-  const fetchDistrictEvaluations = async (district: string): Promise<any> => {
+  const fetchDistrictEvaluations = async (facilities: string[]): Promise<any> => {
     return await fetchEvaluationScores(DatabaseNames.COMPLETED_EVALUTATIONS).then((response) => {
       return response.filter(function (el: { mentee: any; }) {
-        return el.mentee.district == district;
+        return facilities.includes(el.mentee.facility);
       });
     });
   };

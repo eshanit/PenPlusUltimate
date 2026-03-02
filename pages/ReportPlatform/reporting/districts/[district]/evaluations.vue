@@ -5,12 +5,18 @@ const goBack = () => {
 };
 
 const route = useRoute()
-const district: any = route.params.district
+const district: any = route.params['district']
+
+// Get facilities for this district
+const useDistricts = useDistrictsStore();
+const districts: any = await useDistricts.fetchDistricts();
+const districtData = districts.find((el: any) => el.district === district)
+const facilities = districtData?.facilities || []
 
 //evaluations
 const useEvaluations = useEvalDataStore();
 
-const districtEvals = await useEvaluations.fetchDistrictEvaluations(district);
+const districtEvals = await useEvaluations.fetchDistrictEvaluations(facilities);
 
 </script>
 <template>

@@ -6,8 +6,8 @@ import capitalizeFirstLetter from "@/utilities/capitalizeFirstLetter";
 
 const route = useRoute();
 const router = useRouter();
-const facility = route.params.facility
-const status = route.params.status
+const facility = route.params['facility'] as string
+const status = route.params['status'] as string
 
 const showTool = ref(false);
 const completedEvals: any = ref([]);
@@ -49,11 +49,15 @@ const toolsEvals = computed(() => {
     let evals;
 
     if (status == 'completed') {
-        evals = evaluationStats.completedEvaluations.filter((el) => el.mentee.facility == facility);
+        evals = evaluationStats.completed5Evals.filter((el) => el.mentee.facility == facility);
     } else if (status == 'twocompleted') {
         evals = evaluationStats.completed2Evals.filter((el) => el.mentee.facility == facility);
     } else if (status == 'onecompleted') {
         evals = evaluationStats.completed1Evals.filter((el) => el.mentee.facility == facility);
+    }else if (status == 'threecompleted') {
+        evals = evaluationStats.completed3Evals.filter((el) => el.mentee.facility == facility);
+    } else if (status == 'fourcompleted') {
+        evals = evaluationStats.completed4Evals.filter((el) => el.mentee.facility == facility);
     } else {
         evals = completedEvals.value.filter((el: any) => el.mentee.facility == facility);
     }
@@ -66,6 +70,10 @@ const statusInfo = computed(() => {
     switch (status) {
         case 'completed':
             return { label: 'Completed', color: 'green', description: '5 sessions completed' };
+        case 'fourcompleted':
+            return { label: 'Four Sessions', color: 'orange', description: '4 sessions completed' };
+        case 'threecompleted':
+            return { label: 'Three Sessions', color: 'yellow', description: '3 sessions completed' };
         case 'twocompleted':
             return { label: 'Two Sessions', color: 'orange', description: '2 sessions completed' };
         case 'onecompleted':

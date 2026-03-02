@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { format } from 'date-fns'
-import evaluationItemData from '~/data/evaluationItemData_og';
+import evaluationItemData from '~/data/evaluationItemData';
 
 const props = defineProps<{
     evaluation: any

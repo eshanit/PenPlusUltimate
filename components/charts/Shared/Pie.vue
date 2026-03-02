@@ -9,15 +9,23 @@ const props = defineProps<{
     series?: number[];
     labels?: string[];
     title?: string;
-    width?: number;
+    width?: string | number;
 }>();
 
+// Safe computation with null/undefined guards
 const chartOptions = computed(() => {
-    const series = props.series || (props.pieData ? Object.values(props.pieData) : []);
-    const labels = props.labels || (props.pieData ? Object.keys(props.pieData) : []);
+    // Handle undefined or null pieData
+    const pieData = props.pieData || {};
+    
+    const series = props.series || (Object.keys(pieData).length > 0 ? Object.values(pieData) : []);
+    const labels = props.labels || (Object.keys(pieData).length > 0 ? Object.keys(pieData) : []);
+    
+    // Don't render chart if there's no valid data
+    const hasValidData = series.length > 0 && series.some(val => val > 0);
 
     return {
-        series,
+        series: hasValidData ? series : [],
+        hasData: hasValidData,
         options: {
             title: props.title ? {
                 text: props.title,
@@ -34,15 +42,15 @@ const chartOptions = computed(() => {
                 },
             } : undefined,
             chart: {
-                width: props.width || 380,
+                width: props.width || '100%',
                 type: 'pie',
             },
-            labels,
+            labels: hasValidData ? labels : [],
             responsive: [{
                 breakpoint: 480,
                 options: {
                     chart: {
-                        width: 200
+                        width: '100%'
                     },
                     legend: {
                         position: 'bottom'
@@ -55,5 +63,26 @@ const chartOptions = computed(() => {
 
 </script>
 <template>
-    <apexchart type="pie" :width="chartOptions.options.chart.width" :options="chartOptions.options" :series="chartOptions.series"></apexchart>
+    <div v-if="chartOptions.hasData" class="chart-container">
+        <apexchart type="pie" :width="chartOptions.options.chart.width" :options="chartOptions.options" :series="chartOptions.series"></apexchart>
+    </div>
+    <div v-else class="no-data-message">
+        <p class="text-slate-500 text-sm">No data available for chart</p>
+    </div>
 </template>
+
+<style scoped>
+.chart-container {
+    width: 100%;
+    min-height: 300px;
+}
+
+.no-data-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+</style>

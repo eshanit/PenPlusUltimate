@@ -1,5 +1,7 @@
 interface EvaluationCounts {
     allCompletedCount: number;
+    fourCompletedCount: number;
+    threeCompletedCount: number;
     twoCompletedCount: number;
     oneCompletedCount: number;
     totalCompletedCount: number;

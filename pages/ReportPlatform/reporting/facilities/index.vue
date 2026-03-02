@@ -37,9 +37,23 @@ const completedEvals = await useEvaluations.fetchEvaluationScores(DatabaseNames.
 const evaluationStats = useEvaluationStats(completedEvals)
 
 const countSessionsFacility = (facility: string) => {
-    const allCompleted = evaluationStats.completedEvaluations.filter((el) => {
+    // const allCompleted = evaluationStats.completedEvaluations.filter((el) => {
+    //     return el.mentee.facility == facility
+    // })
+
+       const allCompleted = evaluationStats.completed5Evals.filter((el) => {
         return el.mentee.facility == facility
     })
+
+
+       const fourCompleted = evaluationStats.completed4Evals.filter((el) => {
+        return el.mentee.facility == facility
+    })
+
+    const threeCompleted = evaluationStats.completed3Evals.filter((el) => {
+        return el.mentee.facility == facility
+    })
+
 
     const twoCompleted = evaluationStats.completed2Evals.filter((el) => {
         return el.mentee.facility == facility
@@ -64,7 +78,9 @@ const countSessionsFacility = (facility: string) => {
         return [
             el.session_1?.evalItemScores,
             el.session_2?.evalItemScores,
-            el.session_3?.evalItemScores
+            el.session_3?.evalItemScores,
+            el.session_4?.evalItemScores,
+            el.session_5?.evalItemScores
         ].flat(2).filter(item => item != null)
     })
 
@@ -76,6 +92,8 @@ const countSessionsFacility = (facility: string) => {
 
     return {
         allCompletedCount: allCompleted.length,
+        fourCompletedCount: fourCompleted.length,
+        threeCompletedCount: threeCompleted.length,
         twoCompletedCount: twoCompleted.length,
         oneCompletedCount: oneCompleted.length,
         allCompletedMean: meanScore
@@ -95,11 +113,13 @@ computedAsync(() => {
             facilityEvalCounts.value.push({
                 facility: f,
                 completedEvals: countSessionsFacility(f).allCompletedCount,
+                fourCompletedEvals: countSessionsFacility(f).fourCompletedCount,
+                threeCompletedEvals: countSessionsFacility(f).threeCompletedCount,      
                 twoCompletedEvals: countSessionsFacility(f).twoCompletedCount,
                 oneCompletedEvals: countSessionsFacility(f).oneCompletedCount,
-                totalEvals: countSessionsFacility(f).allCompletedCount +
-                    countSessionsFacility(f).twoCompletedCount +
-                    countSessionsFacility(f).oneCompletedCount
+                // Fixed: Use allCompletedCount directly instead of summing overlapping categories
+                // This now correctly represents unique evaluations with at least 1 session completed
+                totalEvals: countSessionsFacility(f).allCompletedCount
             })
         })
     ))

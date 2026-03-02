@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type IDistrict from "@/interfaces/IDistrict";
 import processScores from "~/utilities/processScores";
-import evaluationItemData from "~/data/evaluationItemData_og";
+import evaluationItemData from "~/data/evaluationItemData";
 
 const router = useRouter()
 const goBack = () => {
@@ -9,14 +9,20 @@ const goBack = () => {
 };
 
 const route = useRoute()
-const district: any = route.params.district
+const district: any = route.params['district']
+
+// Get district data first to access facilities
+const useDistricts = useDistrictsStore();
+const districts: Array<IDistrict> = await useDistricts.fetchDistricts();
+const districtData = districts.find((el: IDistrict) => el.district === district)
+const facilities = districtData?.facilities || []
 
 const useEvaluations = useEvalDataStore();
-const districtEvals: any = await useEvaluations.fetchDistrictEvaluations(district)
+const districtEvals: any = await useEvaluations.fetchDistrictEvaluations(facilities)
 
 // Evaluation stats
 const evaluationStats = useEvaluationStats(districtEvals)
-const evalCounts = useCountDistrictSessionsCompleted(district, evaluationStats);
+const evalCounts = useCountDistrictSessionsCompleted(district, evaluationStats, facilities);
 
 const totalSessions = computed(() => {
     return (evalCounts.oneCompletedCount + 2 * (evalCounts.twoCompletedCount) + 3 * (evalCounts.allCompletedCount))
@@ -48,28 +54,40 @@ const isToolHighestOpen = ref(false)
 const isToolLowestOpen = ref(false)
 
 // Facility analysis
-const useDistricts = useDistrictsStore();
-const districts: Array<IDistrict> = await useDistricts.fetchDistricts();
-const districtData = districts.find((el: IDistrict) => el.district == district)
-const facilities = districtData?.facilities
-
 const facilityEvaluationCounts = computed(() => {
-    let counts: any[] = []
-    facilities?.forEach((facility) => {
+    // Get all facilities from district data
+    const allFacilities = facilities || [];
+    const counts: any[] = [];
+    
+    // Ensure evaluationStats exists and has the required properties
+    const stats = evaluationStats || {
+        completedEvaluations: [],
+        completed5Evals: [],
+        completed4Evals: [],
+        completed3Evals: [],
+        completed2Evals: [],
+        completed1Evals: []
+    };
+    
+    allFacilities.forEach((facility) => {
+        // Get counts for this facility - will return 0 if no evaluations exist
+        const facilityStats = useCountFacilitySessionsCompleted(facility, stats);
         counts.push({
             facility: facility,
-            total: useCountFacilitySessionsCompleted(facility, evaluationStats).totalCompletedCount,
-            totalSessions: useCountFacilitySessionsCompleted(facility, evaluationStats).totalCompletedSessions,
-        })
-    })
-    return counts
-})
+            total: facilityStats.totalCompletedCount || 0,
+            totalSessions: facilityStats.totalCompletedSessions || 0,
+        });
+    });
+    
+    return counts;
+});
 
 // Finding highest and lowest facility totals
-const maxFacilityTotal = Math.max(...facilityEvaluationCounts.value.map((facility: { total: any; }) => facility.total));
-const highestFacilityTotals = facilityEvaluationCounts.value.filter((facility: { total: number; }) => facility.total === maxFacilityTotal);
-const minFacilityTotal = Math.min(...facilityEvaluationCounts.value.map(facility => facility.total));
-const lowestFacilityTotals = facilityEvaluationCounts.value.filter(facility => facility.total === minFacilityTotal);
+const facilityTotals = facilityEvaluationCounts.value.map((facility: { total: number }) => facility.total ?? 0);
+const maxFacilityTotal = facilityTotals.length > 0 ? Math.max(...facilityTotals) : 0;
+const highestFacilityTotals = facilityEvaluationCounts.value.filter((facility: { total: number }) => facility.total === maxFacilityTotal);
+const minFacilityTotal = facilityTotals.length > 0 ? Math.min(...facilityTotals) : 0;
+const lowestFacilityTotals = facilityEvaluationCounts.value.filter((facility: { total: number }) => facility.total === minFacilityTotal);
 
 const isFacilityHighestOpen = ref(false)
 const isFacilityLowestOpen = ref(false)
@@ -85,7 +103,7 @@ const showFacilitySessionEvalsTable = ref(false)
 const latestEvalScores = useLatestSessionEvals(districtEvals)
 
 const latestEvalScoresCountsPerTool = (tool: string) => {
-    const results = latestEvalScores.filter((el: any) => el.tool == tool)
+    const results = latestEvalScores.filter((el: any) => el.tool === tool)
     const scores = results.map(el => el.scores).flat()
     const result: any = {};
 
@@ -106,7 +124,7 @@ const latestEvalScoresCountsPerTool = (tool: string) => {
 }
 
 const toolData = computed(() => {
-    const result = evaluationItemData.filter((t: { tool: string; }) => t.tool == selectedTool.value);
+    const result = evaluationItemData.filter((t: { tool: string; }) => t.tool === selectedTool.value);
     const newResult: any[] = [];
     const items: any[] = [];
 
@@ -166,6 +184,10 @@ useSeoMeta({
 
     <UContainer class="py-8 px-4">
       <!-- Overview Stats -->
+<!-- 
+       <pre>
+          {{facilityEvaluationCounts}}
+       </pre> -->
       <div class="max-w-6xl mx-auto mb-8">
         <UCard>
           <template #header>
@@ -202,7 +224,7 @@ useSeoMeta({
                 </div>
                 <div class="text-lg font-semibold text-green-700 mb-1">Most Evaluated Tool</div>
                 <div class="text-xl font-bold text-green-600 mb-1">
-                  <span v-if="highestToolTotals.length == 1">
+                  <span v-if="highestToolTotals.length === 1">
                     {{ highestToolTotals[0].tool }}
                   </span>
                   <span v-else-if="highestToolTotals.length > 0">
@@ -229,7 +251,7 @@ useSeoMeta({
                 </div>
                 <div class="text-lg font-semibold text-orange-700 mb-1">Least Evaluated Tool</div>
                 <div class="text-xl font-bold text-orange-600 mb-1">
-                  <span v-if="lowestToolTotals.length == 1">
+                  <span v-if="lowestToolTotals.length === 1">
                     {{ lowestToolTotals[0].tool }}
                   </span>
                   <span v-else-if="lowestToolTotals.length > 0">
@@ -259,7 +281,7 @@ useSeoMeta({
                 </div>
                 <div class="text-lg font-semibold text-purple-700 mb-1">Top Facility</div>
                 <div class="text-xl font-bold text-purple-600 mb-1">
-                  <span v-if="highestFacilityTotals.length == 1">
+                  <span v-if="highestFacilityTotals.length === 1">
                     {{ highestFacilityTotals[0].facility }}
                   </span>
                   <span v-else-if="highestFacilityTotals.length > 0">
@@ -286,7 +308,7 @@ useSeoMeta({
                 </div>
                 <div class="text-lg font-semibold text-teal-700 mb-1">Needs Attention</div>
                 <div class="text-xl font-bold text-teal-600 mb-1">
-                  <span v-if="lowestFacilityTotals.length == 1">
+                  <span v-if="lowestFacilityTotals.length === 1">
                     {{ lowestFacilityTotals[0].facility }}
                   </span>
                   <span v-else-if="lowestFacilityTotals.length > 0">

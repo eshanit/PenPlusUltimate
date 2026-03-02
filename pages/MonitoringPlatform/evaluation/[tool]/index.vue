@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import Routes from "@/constants/Routes";
 import LocalStorageKeys from "@/constants/LocalStorageKeys";
 import { useEvaluation } from "@/composables/useEvaluation";
-import { useProcessLocalStorage } from "@/composables/useProcessLocalStorage";
+import { useProcessLocalStorage } from "@/composables/useLocalStorage";
 
 // State and data
 const route = useRoute()

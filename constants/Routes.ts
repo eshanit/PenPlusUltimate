@@ -205,6 +205,12 @@ const MONITORING_PLATFORM = {
     title: 'Monitoring Platform Dashboard'
 }
 
+const REPORT_PLATFORM = {
+    path: '/ReportPlatform/dashboard',
+    name: 'ReportPlatform-dashboard',
+    title: 'Report Platform Dashboard'
+}
+
 const SYNCING = {
     path: '/MonitoringPlatform/syncing',
     name: 'MonitoringPlatform-syncing',
@@ -261,6 +267,7 @@ export default {
     TOOLS_REPORTING,
     REPORTING_FACILITY_STATUS_REPORT,
     MONITORING_PLATFORM,
+    REPORT_PLATFORM,
     SYNCING,
     GENERATE_REPORT,
     MANAGE_PROVIDERS,

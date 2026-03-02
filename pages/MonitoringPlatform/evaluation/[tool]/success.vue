@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LocalStorageKeys from "@/constants/LocalStorageKeys";
 import Routes from "@/constants/Routes";
-import { useProcessLocalStorage } from "@/composables/useProcessLocalStorage";
+import { useProcessLocalStorage } from "@/composables/useLocalStorage";
 
 const route = useRoute()
 const tool = route.params.tool

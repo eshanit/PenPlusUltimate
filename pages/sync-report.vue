@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DatabaseNames from "@/constants/DatabaseNames";
+import Routes from "@/constants/Routes";
 import { useEvalDataStore } from "@/stores/evaluations";
 import { format } from 'date-fns';
 
@@ -133,7 +134,7 @@ const getStatusIcon = (status: string) => {
 
 // Navigation
 const goBack = () => {
-  navigateTo('/dashboard');
+  navigateTo(Routes.DASHBOARD.path);
 };
 </script>
 

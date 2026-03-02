@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// [Keep all your existing script code exactly as is]
 import type IDistrict from "@/interfaces/IDistrict";
 import Routes from '@/constants/Routes';
 import DatabaseNames from "@/constants/DatabaseNames";
@@ -33,8 +34,8 @@ const countToolSessions = computed(() => {
             label: tool.label,
             name: tool.name,
             fiveCompleted: countSessions.allCompletedCount,
-            fourCompleted: countSessions.fourCompleted,
-            threeCompleted: countSessions.threeCompleted,
+            fourCompleted: countSessions.fourCompletedCount,
+            threeCompleted: countSessions.threeCompletedCount,
             twoCompleted: countSessions.twoCompletedCount,
             oneCompleted: countSessions.oneCompletedCount,
             totalCompleted: countSessions.totalCompletedCount
@@ -78,7 +79,7 @@ const countAllSessions = computed(() => {
 const countDistrictSessions = computed(() => {
     const arr: any[] = []
     districts.forEach((district) => {
-        const countSessions = useCountDistrictSessionsCompleted(district.district, evaluationStats)
+        const countSessions = useCountDistrictSessionsCompleted(district.district, evaluationStats, district.facilities)
         arr.push({
             label: district.district,
             name: district.district,
@@ -179,28 +180,28 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50/30">
-    <!-- Header -->
-    <div class="bg-white/80 backdrop-blur-sm border-b border-gray-200">
+  <div class="min-h-screen bg-slate-50">
+    <!-- Header with glass effect -->
+    <div class="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-slate-200/60">
       <UContainer class="py-4">
-        <div class="flex items-center space-x-4">
-          <UButton 
-            icon="i-heroicons-arrow-left" 
-            color="gray" 
-            variant="ghost" 
-            size="sm"
-            @click="goToDashboard"
-            class="flex-shrink-0"
-          />
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center">
-              <UIcon name="i-heroicons-chart-bar" class="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 class="text-xl font-bold text-gray-900">Reporting Dashboard</h1>
-              <p class="text-sm text-gray-600">
-                Comprehensive evaluation analytics and insights
-              </p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <UButton
+              icon="i-heroicons-arrow-left-20-solid"
+              color="gray"
+              variant="ghost"
+              size="md"
+              @click="goToDashboard"
+              class="rounded-full"
+            />
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl shadow-md flex items-center justify-center">
+                <UIcon name="i-heroicons-chart-bar" class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 class="text-xl font-semibold text-slate-800">Reporting Dashboard</h1>
+                <p class="text-sm text-slate-500">Evaluation analytics and performance insights</p>
+              </div>
             </div>
           </div>
           <SharedPrintButton />
@@ -208,50 +209,54 @@ useSeoMeta({
       </UContainer>
     </div>
 
-    <UContainer class="py-8 px-4">
-      <!-- Data Overview -->
-      <div class="max-w-4xl mx-auto mb-8">
-        <UCard>
+    <UContainer class="py-8 px-4 sm:px-6 lg:px-8">
+      <!-- Data Overview Card -->
+      <div class="max-w-5xl mx-auto mb-10">
+        <UCard class="border-0 shadow-lg bg-gradient-to-br from-white to-slate-50/80 rounded-2xl overflow-hidden">
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900">Data Overview</h3>
-            <p class="text-sm text-gray-600 mt-1">
-              A <span class="font-semibold text-orange-500">session</span> is a sitting between a provider (mentee) and a mentor, 
-              whereas an <span class="font-semibold text-green-500">evaluation</span> is a set of sessions possible to a mentee 
-              on a particular <span class="text-sky-500 font-semibold">tool/disease</span>
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-medium text-slate-800">Data Overview</h3>
+              <span class="text-xs font-medium px-3 py-1 bg-teal-100 text-teal-700 rounded-full">Live</span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">
+              A <span class="font-semibold text-amber-600">session</span> is a sitting between a provider (mentee) and a mentor,
+              whereas an <span class="font-semibold text-emerald-600">evaluation</span> is a set of sessions on a particular tool.
             </p>
           </template>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
             <!-- Evaluations Count -->
-            <div class="text-center">
-              <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <UIcon name="i-heroicons-clipboard-document-check" class="w-8 h-8 text-green-600" />
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <UIcon name="i-heroicons-clipboard-document-check" class="w-7 h-7 text-emerald-600" />
               </div>
-              <div class="text-3xl font-bold text-green-600">{{ completedEvals?.length }}</div>
-              <div class="text-sm text-gray-600 font-medium">Total Evaluations</div>
+              <div>
+                <div class="text-3xl font-bold text-slate-800">{{ completedEvals?.length }}</div>
+                <div class="text-sm text-slate-500 font-medium">Total Evaluations</div>
+              </div>
             </div>
-            
+
             <!-- Sessions Count -->
-            <div class="text-center">
-              <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <UIcon name="i-heroicons-clock" class="w-8 h-8 text-orange-600" />
+            <div class="flex items-center gap-5">
+              <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center shadow-sm">
+                <UIcon name="i-heroicons-clock" class="w-7 h-7 text-amber-600" />
               </div>
-              <div class="text-3xl font-bold text-orange-600">{{ countAllSessions }}</div>
-              <div class="text-sm text-gray-600 font-medium">Total Sessions</div>
+              <div>
+                <div class="text-3xl font-bold text-slate-800">{{ countAllSessions }}</div>
+                <div class="text-sm text-slate-500 font-medium">Total Sessions</div>
+              </div>
             </div>
           </div>
 
           <template #footer>
-            <div class="flex justify-between items-center">
-              <p class="text-sm text-gray-600">
-                Download all evaluations in CSV format
-              </p>
-              <UButton 
-                variant="solid" 
-                color="orange" 
-                label="Download Data" 
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <p class="text-sm text-slate-500">Download all evaluations in CSV format</p>
+              <UButton
+                variant="solid"
+                color="teal"
+                label="Download Data"
                 @click="useDownloadEvaluations(completedEvals)"
                 icon="i-heroicons-arrow-down-tray"
+                class="rounded-lg"
               />
             </div>
           </template>
@@ -259,237 +264,236 @@ useSeoMeta({
       </div>
 
       <!-- Key Performance Indicators -->
-      <div class="max-w-4xl mx-auto mb-8">
-        <UCard>
-          <template #header>
-            <h3 class="text-lg font-semibold text-gray-900">Key Performance Indicators</h3>
-            <p class="text-sm text-gray-600 mt-1">Click on the cards below for detailed reports and analysis</p>
-          </template>
-          
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <!-- Mentees Card -->
-            <NuxtLink :to="Routes.MENTEES_REPORTING.path">
-              <UCard
-                class="bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200 cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-              >
-                <div class="text-center">
-                  <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-user-group" class="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div class="text-2xl font-bold text-blue-600">{{ mentees?.length }}</div>
-                  <div class="text-sm font-medium text-blue-700">Mentees/Providers</div>
+      <div class="max-w-5xl mx-auto mb-10">
+        <h2 class="text-lg font-medium text-slate-800 mb-4">Key Performance Indicators</h2>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- Mentees Card (clickable) -->
+          <NuxtLink :to="Routes.MENTEES_REPORTING.path" class="group">
+            <UCard class="relative border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50/70">
+              <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-5 h-5 text-blue-600" />
+              </div>
+              <div class="text-center py-2">
+                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+                  <UIcon name="i-heroicons-user-group" class="w-7 h-7 text-blue-600" />
                 </div>
-              </UCard>
-            </NuxtLink>
+                <div class="text-2xl font-bold text-blue-700">{{ mentees?.length }}</div>
+                <div class="text-sm font-medium text-blue-600/80">Mentees/Providers</div>
+              </div>
+            </UCard>
+          </NuxtLink>
 
-            <!-- Tools Card -->
-            <NuxtLink :to="Routes.TOOLS_REPORTING.path">
-              <UCard
-                class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-              >
-                <div class="text-center">
-                  <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-wrench-screwdriver" class="w-6 h-6 text-green-600" />
-                  </div>
-                  <div class="text-2xl font-bold text-green-600">{{ tools.length }}</div>
-                  <div class="text-sm font-medium text-green-700">Tools</div>
+          <!-- Tools Card (clickable) -->
+          <NuxtLink :to="Routes.TOOLS_REPORTING.path" class="group">
+            <UCard class="relative border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-50 to-green-50/70">
+              <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-5 h-5 text-emerald-600" />
+              </div>
+              <div class="text-center py-2">
+                <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+                  <UIcon name="i-heroicons-wrench-screwdriver" class="w-7 h-7 text-emerald-600" />
                 </div>
-              </UCard>
-            </NuxtLink>
+                <div class="text-2xl font-bold text-emerald-700">{{ tools.length }}</div>
+                <div class="text-sm font-medium text-emerald-600/80">Tools</div>
+              </div>
+            </UCard>
+          </NuxtLink>
 
-            <!-- Districts Card -->
-            <NuxtLink :to="Routes.DISTRICTS_REPORTING.path">
-              <UCard
-                class="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200 cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-              >
-                <div class="text-center">
-                  <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-map-pin" class="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div class="text-2xl font-bold text-purple-600">{{ districts?.length }}</div>
-                  <div class="text-sm font-medium text-purple-700">Districts</div>
+          <!-- Districts Card (clickable) -->
+          <NuxtLink :to="Routes.DISTRICTS_REPORTING.path" class="group">
+            <UCard class="relative border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-50 to-violet-50/70">
+              <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-5 h-5 text-purple-600" />
+              </div>
+              <div class="text-center py-2">
+                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+                  <UIcon name="i-heroicons-map-pin" class="w-7 h-7 text-purple-600" />
                 </div>
-              </UCard>
-            </NuxtLink>
+                <div class="text-2xl font-bold text-purple-700">{{ districts?.length }}</div>
+                <div class="text-sm font-medium text-purple-600/80">Districts</div>
+              </div>
+            </UCard>
+          </NuxtLink>
 
-            <!-- Facilities Card -->
-            <NuxtLink :to="Routes.FACILITIES_REPORTING.path">
-              <UCard
-                class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200 cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
-              >
-                <div class="text-center">
-                  <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-building-office" class="w-6 h-6 text-rose-600" />
-                  </div>
-                  <div class="text-2xl font-bold text-rose-600">{{ facilities?.flat().length }}</div>
-                  <div class="text-sm font-medium text-rose-700">Facilities</div>
+          <!-- Facilities Card (clickable) -->
+          <NuxtLink :to="Routes.FACILITIES_REPORTING.path" class="group">
+            <UCard class="relative border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-2xl overflow-hidden bg-gradient-to-br from-rose-50 to-pink-50/70">
+              <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-5 h-5 text-rose-600" />
+              </div>
+              <div class="text-center py-2">
+                <div class="w-14 h-14 bg-rose-100 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+                  <UIcon name="i-heroicons-building-office" class="w-7 h-7 text-rose-600" />
                 </div>
-              </UCard>
-            </NuxtLink>
-          </div>
-        </UCard>
+                <div class="text-2xl font-bold text-rose-700">{{ facilities?.flat().length }}</div>
+                <div class="text-sm font-medium text-rose-600/80">Facilities</div>
+              </div>
+            </UCard>
+          </NuxtLink>
+        </div>
       </div>
 
-      <!-- Progress Tracking -->
-      <div class="max-w-4xl mx-auto">
+      <!-- Progress Tracking Sections -->
+      <div class="max-w-5xl mx-auto space-y-10">
         <!-- Tools Progress -->
-        <div class="mb-8">
-          <UCard>
-            <template #header>
-              <h3 class="text-lg font-semibold text-gray-900">Tools/Diseases Progress Tracking</h3>
-              <p class="text-sm text-gray-600 mt-1">Performance across different evaluation tools</p>
-            </template>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Most Evaluated Tool -->
-              <UCard class="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200">
-                <div class="text-center mb-4">
-                  <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-trophy" class="w-6 h-6 text-sky-600" />
+        <section>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-1 h-6 bg-teal-500 rounded-full"></div>
+            <h2 class="text-lg font-medium text-slate-800">Tools/Diseases Progress Tracking</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Most Evaluated Tool -->
+            <UCard class="border-0 shadow-md rounded-2xl bg-gradient-to-br from-sky-50 to-blue-50/70">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center shadow-sm">
+                  <UIcon name="i-heroicons-trophy" class="w-6 h-6 text-sky-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-sky-700 font-medium">Most Evaluated Tool</p>
+                  <p class="text-2xl font-bold text-sky-800 mt-1">{{ maxCompletedTool.label }}</p>
+                  <div class="mt-2 text-sm text-sky-700">
+                    <span class="font-semibold">{{ totalSessionMinMaxTool.max.evals }}</span> evaluations •
+                    <span class="font-semibold">{{ totalSessionMinMaxTool.max.sessions }}</span> sessions
                   </div>
-                  <div class="text-lg font-semibold text-sky-700 mb-2">Most Evaluated Tool</div>
-                  <div class="text-3xl font-bold text-sky-600">{{ maxCompletedTool.label }}</div>
                 </div>
-                <div class="text-center text-sm text-sky-700">
-                  <span class="font-semibold">{{ totalSessionMinMaxTool.max.evals }}</span> evaluations • 
-                  <span class="font-semibold">{{ totalSessionMinMaxTool.max.sessions }}</span> sessions
-                </div>
-              </UCard>
+              </div>
+            </UCard>
 
-              <!-- Least Evaluated Tool -->
-              <UCard class="bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-200">
-                <div class="text-center mb-4">
-                  <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-rose-600" />
+            <!-- Least Evaluated Tool -->
+            <UCard class="border-0 shadow-md rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50/70">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shadow-sm">
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-amber-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-amber-700 font-medium">Least Evaluated Tool</p>
+                  <p class="text-2xl font-bold text-amber-800 mt-1">{{ minCompletedTool.label }}</p>
+                  <div class="mt-2 text-sm text-amber-700">
+                    <span class="font-semibold">{{ totalSessionMinMaxTool.min.evals }}</span> evaluations •
+                    <span class="font-semibold">{{ totalSessionMinMaxTool.min.sessions }}</span> sessions
                   </div>
-                  <div class="text-lg font-semibold text-rose-700 mb-2">Least Evaluated Tool</div>
-                  <div class="text-3xl font-bold text-rose-600">{{ minCompletedTool.label }}</div>
                 </div>
-                <div class="text-center text-sm text-rose-700">
-                  <span class="font-semibold">{{ totalSessionMinMaxTool.min.evals }}</span> evaluations • 
-                  <span class="font-semibold">{{ totalSessionMinMaxTool.min.sessions }}</span> sessions
-                </div>
-              </UCard>
-            </div>
-          </UCard>
-        </div>
+              </div>
+            </UCard>
+          </div>
+        </section>
 
         <!-- Districts Progress -->
-        <div class="mb-8">
-          <UCard>
-            <template #header>
-              <h3 class="text-lg font-semibold text-gray-900">Districts Progress Tracking</h3>
-              <p class="text-sm text-gray-600 mt-1">Geographical distribution of evaluations</p>
-            </template>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- District with Most Evaluations -->
-              <UCard class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
-                <div class="text-center mb-4">
-                  <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-trophy" class="w-6 h-6 text-blue-600" />
+        <section>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-1 h-6 bg-indigo-500 rounded-full"></div>
+            <h2 class="text-lg font-medium text-slate-800">Districts Progress Tracking</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- District with Most Evaluations -->
+            <UCard class="border-0 shadow-md rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50/70">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center shadow-sm">
+                  <UIcon name="i-heroicons-trophy" class="w-6 h-6 text-indigo-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-indigo-700 font-medium">District with Most Evaluations</p>
+                  <p class="text-2xl font-bold text-indigo-800 mt-1">{{ maxCompletedDistrict.label }}</p>
+                  <div class="mt-2 text-sm text-indigo-700">
+                    <span class="font-semibold">{{ totalSessionMinMaxDistrict.max.evals }}</span> evaluations •
+                    <span class="font-semibold">{{ totalSessionMinMaxDistrict.max.sessions }}</span> sessions
                   </div>
-                  <div class="text-lg font-semibold text-blue-700 mb-2">District with Most Evaluations</div>
-                  <div class="text-3xl font-bold text-blue-600">{{ maxCompletedDistrict.label }}</div>
                 </div>
-                <div class="text-center text-sm text-blue-700">
-                  <span class="font-semibold">{{ totalSessionMinMaxDistrict.max.evals }}</span> evaluations • 
-                  <span class="font-semibold">{{ totalSessionMinMaxDistrict.max.sessions }}</span> sessions
-                </div>
-              </UCard>
+              </div>
+            </UCard>
 
-              <!-- District with Least Evaluations -->
-              <UCard class="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200">
-                <div class="text-center mb-4">
-                  <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-orange-600" />
+            <!-- District with Least Evaluations -->
+            <UCard class="border-0 shadow-md rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50/70">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center shadow-sm">
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-orange-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-orange-700 font-medium">District with Least Evaluations</p>
+                  <p class="text-2xl font-bold text-orange-800 mt-1">{{ minCompletedDistrict.label }}</p>
+                  <div class="mt-2 text-sm text-orange-700">
+                    <span class="font-semibold">{{ totalSessionMinMaxDistrict.min.evals }}</span> evaluations •
+                    <span class="font-semibold">{{ totalSessionMinMaxDistrict.min.sessions }}</span> sessions
                   </div>
-                  <div class="text-lg font-semibold text-orange-700 mb-2">District with Least Evaluations</div>
-                  <div class="text-3xl font-bold text-orange-600">{{ minCompletedDistrict.label }}</div>
                 </div>
-                <div class="text-center text-sm text-orange-700">
-                  <span class="font-semibold">{{ totalSessionMinMaxDistrict.min.evals }}</span> evaluations • 
-                  <span class="font-semibold">{{ totalSessionMinMaxDistrict.min.sessions }}</span> sessions
-                </div>
-              </UCard>
-            </div>
-          </UCard>
-        </div>
+              </div>
+            </UCard>
+          </div>
+        </section>
 
         <!-- Facilities Progress -->
-        <div class="mb-8">
-          <UCard>
-            <template #header>
-              <h3 class="text-lg font-semibold text-gray-900">Facilities Progress Tracking</h3>
-              <p class="text-sm text-gray-600 mt-1">Healthcare facility evaluation performance</p>
-            </template>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Facility with Most Evaluations -->
-              <UCard class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200">
-                <div class="text-center mb-4">
-                  <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-trophy" class="w-6 h-6 text-green-600" />
+        <section>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-1 h-6 bg-emerald-500 rounded-full"></div>
+            <h2 class="text-lg font-medium text-slate-800">Facilities Progress Tracking</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Facility with Most Evaluations -->
+            <UCard class="border-0 shadow-md rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50/70">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shadow-sm">
+                  <UIcon name="i-heroicons-trophy" class="w-6 h-6 text-emerald-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-emerald-700 font-medium">Facility with Most Evaluations</p>
+                  <p class="text-2xl font-bold text-emerald-800 mt-1">{{ maxCompletedFacility.label }}</p>
+                  <div class="mt-2 text-sm text-emerald-700">
+                    <span class="font-semibold">{{ totalSessionMinMaxFacility.max.evals }}</span> evaluations •
+                    <span class="font-semibold">{{ totalSessionMinMaxFacility.max.sessions }}</span> sessions
                   </div>
-                  <div class="text-lg font-semibold text-green-700 mb-2">Facility with Most Evaluations</div>
-                  <div class="text-3xl font-bold text-green-600">{{ maxCompletedFacility.label }}</div>
                 </div>
-                <div class="text-center text-sm text-green-700">
-                  <span class="font-semibold">{{ totalSessionMinMaxFacility.max.evals }}</span> evaluations • 
-                  <span class="font-semibold">{{ totalSessionMinMaxFacility.max.sessions }}</span> sessions
-                </div>
-              </UCard>
+              </div>
+            </UCard>
 
-              <!-- Facility with Least Evaluations -->
-              <UCard class="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200">
-                <div class="text-center mb-4">
-                  <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-red-600" />
+            <!-- Facility with Least Evaluations -->
+            <UCard class="border-0 shadow-md rounded-2xl bg-gradient-to-br from-red-50 to-rose-50/70">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center shadow-sm">
+                  <UIcon name="i-heroicons-exclamation-triangle" class="w-6 h-6 text-red-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-red-700 font-medium">Facility with Least Evaluations</p>
+                  <p class="text-2xl font-bold text-red-800 mt-1">{{ minCompletedFacility.label }}</p>
+                  <div class="mt-2 text-sm text-red-700">
+                    <span class="font-semibold">{{ totalSessionMinMaxFacility.min.evals }}</span> evaluations •
+                    <span class="font-semibold">{{ totalSessionMinMaxFacility.min.sessions }}</span> sessions
                   </div>
-                  <div class="text-lg font-semibold text-red-700 mb-2">Facility with Least Evaluations</div>
-                  <div class="text-3xl font-bold text-red-600">{{ minCompletedFacility.label }}</div>
                 </div>
-                <div class="text-center text-sm text-red-700">
-                  <span class="font-semibold">{{ totalSessionMinMaxFacility.min.evals }}</span> evaluations • 
-                  <span class="font-semibold">{{ totalSessionMinMaxFacility.min.sessions }}</span> sessions
-                </div>
-              </UCard>
-            </div>
-          </UCard>
-        </div>
+              </div>
+            </UCard>
+          </div>
+        </section>
       </div>
 
-      <!-- Quick Stats -->
-      <div class="max-w-4xl mx-auto mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <UCard class="text-center bg-blue-50/50">
-          <div class="text-2xl font-bold text-blue-600">{{ mentees?.length }}</div>
-          <div class="text-sm text-blue-600 font-medium">Mentees</div>
+      <!-- Quick Stats Row -->
+      <div class="max-w-5xl mx-auto mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">{{ mentees?.length }}</div>
+          <div class="text-xs text-slate-500">Mentees</div>
         </UCard>
-        
-        <UCard class="text-center bg-green-50/50">
-          <div class="text-2xl font-bold text-green-600">{{ tools.length }}</div>
-          <div class="text-sm text-green-600 font-medium">Tools</div>
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">{{ tools.length }}</div>
+          <div class="text-xs text-slate-500">Tools</div>
         </UCard>
-        
-        <UCard class="text-center bg-purple-50/50">
-          <div class="text-2xl font-bold text-purple-600">{{ districts?.length }}</div>
-          <div class="text-sm text-purple-600 font-medium">Districts</div>
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">{{ districts?.length }}</div>
+          <div class="text-xs text-slate-500">Districts</div>
         </UCard>
-        
-        <UCard class="text-center bg-rose-50/50">
-          <div class="text-2xl font-bold text-rose-600">{{ facilities?.flat().length }}</div>
-          <div class="text-sm text-rose-600 font-medium">Facilities</div>
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">{{ facilities?.flat().length }}</div>
+          <div class="text-xs text-slate-500">Facilities</div>
         </UCard>
       </div>
 
       <!-- Back to Dashboard Button -->
-      <div class="max-w-4xl mx-auto mt-8 flex justify-center">
+      <div class="max-w-5xl mx-auto mt-8 flex justify-center">
         <UButton
           icon="i-heroicons-arrow-left"
           color="gray"
           variant="outline"
           label="Back to Dashboard"
           @click="goToDashboard"
+          class="rounded-full px-6"
         />
       </div>
     </UContainer>
@@ -499,11 +503,11 @@ useSeoMeta({
 <style scoped>
 /* Smooth transitions */
 * {
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Hover effects for interactive cards */
-.cursor-pointer:hover {
-  transform: translateY(-2px);
+/* Optional: subtle animation for cards */
+.group:hover .absolute {
+  transform: scale(1.05);
 }
 </style>

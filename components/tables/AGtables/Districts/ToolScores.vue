@@ -5,8 +5,7 @@ import {
     AllCommunityModule,
     ModuleRegistry,
 } from "ag-grid-community";
-import { format } from 'date-fns';
-import type IToolEvaluation from '@/interfaces/IToolEvaluation';
+
 
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -14,8 +13,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const props = defineProps<{
     toolData: any
 }>()
-
-const tools = useTools
 
 const emit = defineEmits<{
     (event: 'record', id: string): void;
@@ -41,6 +38,18 @@ columnDefs.value = [
     {
         headerName: "Evaluation Item",
         field: 'title',
+        sortable: true,
+        filter: true
+    },
+      {
+        headerName: "Score of 5",
+        field: 'numberof5',
+        sortable: true,
+        filter: true
+    },
+    {
+        headerName: "Score of 4",
+        field: 'numberof4',
         sortable: true,
         filter: true
     },
@@ -72,7 +81,7 @@ columnDefs.value = [
 
 
 // Transform statistics into row data
-const rowData = ref([]);
+
 
 const agGrid = ref();
 // Method to handle grid ready event

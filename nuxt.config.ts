@@ -13,9 +13,11 @@ export default defineNuxtConfig({
     // Do not put secret information here
     public: {
       // db Url
-      couchDBUrl: process.env.DATA_BASE_URL,
-      couchDBUsername: process.env.DATA_BASE_USERNAME,
-      couchDBPassword: process.env.DATA_BASE_PSWD,
+      couchDBUrl: process.env['DATA_BASE_URL'],
+      couchDBUsername: process.env['DATA_BASE_USERNAME'],
+      couchDBPassword: process.env['DATA_BASE_PSWD'],
+      // Master password for admin access (can be overridden in .env)
+      masterPassword: process.env['VITE_MASTER_PASSWORD'] || '123356',
     },
   },
   vite: {
@@ -25,7 +27,7 @@ export default defineNuxtConfig({
     server: {
       proxy: {
         '/couchdb': {
-          target: process.env.DATA_BASE_URL,
+          target: process.env['DATA_BASE_URL'],
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/couchdb/, ''),
           configure: (proxy: any) => {
@@ -33,7 +35,7 @@ export default defineNuxtConfig({
               console.error('Proxy error:', err);
             });
             proxy.on('proxyReq', (proxyReq: any, req: any, res: any) => {
-              proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from(process.env.DATA_BASE_USERNAME + ':' + process.env.DATA_BASE_PSWD).toString('base64'));
+              proxyReq.setHeader('Authorization', 'Basic ' + Buffer.from(process.env['DATA_BASE_USERNAME'] + ':' + process.env['DATA_BASE_PSWD']).toString('base64'));
             });
           }
         }
@@ -41,9 +43,30 @@ export default defineNuxtConfig({
     }
   },
   ssr: false,
+  // Route rules for optimization
+  routeRules: {
+    // Static generation for home page
+    '/': { prerender: true },
+    // Client-side rendering for authenticated pages
+    '/dashboard': { ssr: false },
+    // Lazy load Report Platform routes (heavy)
+    '/ReportPlatform/**': { ssr: false },
+    // Lazy load Monitoring Platform
+    '/MonitoringPlatform/**': { ssr: false },
+    // Lazy load evaluation pages
+    '/startEvaluating': { ssr: false },
+    // API routes - no SSR needed
+    '/api/**': { cors: true },
+  },
+  // Experimental features for performance
+  experimental: {
+    payloadExtraction: true,
+    renderJsonPayloads: true,
+  },
   // Ensure assets are properly built for mobile
   nitro: {
-    static: true
+    static: true,
+    compressPublicAssets: true,
   },
   // Allow access from other devices on the network for development
   devServer: {

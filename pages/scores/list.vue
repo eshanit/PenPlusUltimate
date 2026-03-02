@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Routes from '@/constants/Routes';
 import LocalStorageKeys from '@/constants/LocalStorageKeys';
-import { useProcessLocalStorage } from '@/composables/useProcessLocalStorage';
+import { useProcessLocalStorage } from '@/composables/useLocalStorage';
 import { useEvaluationStats } from '@/composables/useEvaluationStats';
 import DatabaseNames from '@/constants/DatabaseNames';
 import { useEvalDataStore } from '@/stores/evaluations';

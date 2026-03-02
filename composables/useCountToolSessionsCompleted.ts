@@ -1,31 +1,31 @@
 
 export function useCountToolSessionsCompleted(tool: string, evaluationStats: any ) {
 
-    const allCompleted = evaluationStats.completedEvaluations.filter((el: any) => {
-        return el.tool == tool
-    })
+    const allCompleted = evaluationStats.completedEvaluations?.filter((el: any) => {
+        return el.tool?.toLowerCase() === tool?.toLowerCase();
+    }) || []
 
-    const fourCompleted = evaluationStats.completed4Evals.filter((el: any) => {
-        return el.tool == tool
-    })
+    const fourCompleted = evaluationStats.completed4Evals?.filter((el: any) => {
+        return el.tool?.toLowerCase() === tool?.toLowerCase();
+    }) || []
 
-    const threeCompleted = evaluationStats.completed3Evals.filter((el: any) => {
-        return el.tool == tool
-    })
+    const threeCompleted = evaluationStats.completed3Evals?.filter((el: any) => {
+        return el.tool?.toLowerCase() === tool?.toLowerCase();
+    }) || []
 
-    const twoCompleted = evaluationStats.completed2Evals.filter((el: any) => {
-        return el.tool == tool
-    })
+    const twoCompleted = evaluationStats.completed2Evals?.filter((el: any) => {
+        return el.tool?.toLowerCase() === tool?.toLowerCase();
+    }) || []
 
-    const oneCompleted = evaluationStats.completed1Evals.filter((el: any) => {
-        return el.tool == tool
-    })
+    const oneCompleted = evaluationStats.completed1Evals?.filter((el: any) => {
+        return el.tool?.toLowerCase() === tool?.toLowerCase();
+    }) || []
 
     return {
         //evaluations
         allCompletedCount: allCompleted.length,
-        fourCompleted: fourCompleted.length,
-        threeCompleted: threeCompleted.length,
+        fourCompletedCount: fourCompleted.length,
+        threeCompletedCount: threeCompleted.length,
         twoCompletedCount: twoCompleted.length,
         oneCompletedCount: oneCompleted.length,
         totalCompletedCount: oneCompleted.length + twoCompleted.length + threeCompleted.length + fourCompleted.length + allCompleted.length,

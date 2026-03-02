@@ -2,7 +2,10 @@ import type IEvalScore from "@/interfaces/IEvalScore";
 import * as ss from 'simple-statistics';
 
 interface ScoreStatistics {
-    [key: string]: string|number|Record<number, number>; // Dynamic keys for score counts
+    meanScore: string;
+    medianScore: string;
+    modeScore: string | number;
+    scoreDistribution: Record<number, number>;
 }
 export function useScoreSimpleStatistics(scores: IEvalScore[]): ScoreStatistics {
 

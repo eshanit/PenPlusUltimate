@@ -26,8 +26,8 @@ const countToolSessions = computed(() => {
             label: tool.label,
             name: tool.name,
             fiveCompleted: countSessions.allCompletedCount,
-            fourCompleted: countSessions.fourCompleted,
-            threeCompleted: countSessions.threeCompleted,
+            fourCompleted: countSessions.fourCompletedCount,
+            threeCompleted: countSessions.threeCompletedCount,
             twoCompleted: countSessions.twoCompletedCount,
             oneCompleted: countSessions.oneCompletedCount,
             totalCompleted: countSessions.totalCompletedCount
@@ -60,67 +60,70 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50/30">
-    <!-- Header -->
-    <div class="bg-white/80 backdrop-blur-sm border-b border-gray-200">
+  <div class="min-h-screen bg-slate-50">
+    <!-- Header with glass effect -->
+    <div class="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-slate-200/60">
       <UContainer class="py-4">
-        <div class="flex items-center space-x-4">
-          <UButton 
-            icon="i-heroicons-arrow-left" 
-            color="gray" 
-            variant="ghost" 
-            size="sm"
-            @click="goBack"
-            class="flex-shrink-0"
-          />
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center">
-              <UIcon name="i-heroicons-wrench-screwdriver" class="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 class="text-xl font-bold text-gray-900">Tools Analysis</h1>
-              <p class="text-sm text-gray-600">
-                Comprehensive evaluation tools and disease tracking
-              </p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <UButton
+              icon="i-heroicons-arrow-left-20-solid"
+              color="gray"
+              variant="ghost"
+              size="md"
+              @click="goBack"
+              class="rounded-full"
+            />
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl shadow-md flex items-center justify-center">
+                <UIcon name="i-heroicons-wrench-screwdriver" class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 class="text-xl font-semibold text-slate-800">Tools Analysis</h1>
+                <p class="text-sm text-slate-500">Evaluation tools and disease tracking</p>
+              </div>
             </div>
           </div>
         </div>
       </UContainer>
     </div>
 
-    <UContainer class="py-8 px-4">
+    <UContainer class="py-8 px-4 sm:px-6 lg:px-8">
       <!-- Evaluation Sessions Overview -->
-      <div class="max-w-6xl mx-auto mb-8">
-        <UCard>
+      <div class="max-w-6xl mx-auto mb-10">
+        <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900">Evaluations by NCD Tool/Disease</h3>
-            <p class="text-sm text-gray-600 mt-1">
-              Session breakdown showing evaluations with 1-5 sessions. A completed evaluation has 5 sessions.
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-medium text-slate-800">Evaluations by NCD Tool/Disease</h3>
+              <span class="text-xs font-medium px-3 py-1 bg-teal-100 text-teal-700 rounded-full">Live</span>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">
+              Session breakdown showing evaluations with 1‑5 sessions. A completed evaluation has 5 sessions.
             </p>
           </template>
-          
-          <div class="space-y-6">
+
+          <div class="space-y-6 p-2">
             <!-- Chart Toggle -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
               <div>
-                <h4 class="font-medium text-blue-900">Chart View</h4>
-                <p class="text-sm text-blue-700">Toggle between counts and percentages</p>
+                <h4 class="font-medium text-blue-800">Chart View</h4>
+                <p class="text-sm text-blue-600">Toggle between counts and percentages</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex gap-3">
                 <UButton
                   :variant="!showToolChartPerc ? 'solid' : 'outline'"
                   color="blue"
                   @click="showToolChartPerc = false"
-                  class="transition-all duration-200"
+                  class="rounded-lg transition-all duration-200"
                   :class="!showToolChartPerc ? 'shadow-md' : ''"
                 >
                   View Counts
                 </UButton>
                 <UButton
                   :variant="showToolChartPerc ? 'solid' : 'outline'"
-                  color="green"
+                  color="blue"
                   @click="showToolChartPerc = true"
-                  class="transition-all duration-200"
+                  class="rounded-lg transition-all duration-200"
                   :class="showToolChartPerc ? 'shadow-md' : ''"
                 >
                   View Percentages
@@ -129,7 +132,7 @@ useSeoMeta({
             </div>
 
             <!-- Chart Display -->
-            <div class="bg-white rounded-lg border border-gray-200 p-4">
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
               <div v-if="showToolChartPerc">
                 <ChartsDashboardToolsStackedPerc :count-tool-sessions="countToolSessions" />
               </div>
@@ -139,7 +142,7 @@ useSeoMeta({
             </div>
 
             <!-- Evaluation Statistics Table -->
-            <div class="mt-6">
+            <div class="mt-4">
               <TablesAGtablesDashboardToolEvaluations :evaluation-stats="evaluationStats" />
             </div>
           </div>
@@ -147,19 +150,19 @@ useSeoMeta({
       </div>
 
       <!-- Competency Response Count -->
-      <div class="max-w-6xl mx-auto mb-8">
-        <UCard>
+      <div class="max-w-6xl mx-auto mb-10">
+        <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900">Competency Response Analysis</h3>
-            <p class="text-sm text-gray-600 mt-1">Detailed breakdown of scores across all evaluation tools</p>
+            <h3 class="text-lg font-medium text-slate-800">Competency Response Analysis</h3>
+            <p class="text-sm text-slate-500 mt-1">Detailed breakdown of scores across all evaluation tools</p>
           </template>
-          
-          <div class="space-y-6">
+
+          <div class="space-y-6 p-2">
             <!-- View Toggle -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg border border-purple-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-5 bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl border border-purple-200">
               <div>
-                <h4 class="font-medium text-purple-900">Data View</h4>
-                <p class="text-sm text-purple-700">
+                <h4 class="font-medium text-purple-800">Data View</h4>
+                <p class="text-sm text-purple-600">
                   {{ showAggregateTable ? 'Summarized overview' : 'Detailed item breakdown' }}
                 </p>
               </div>
@@ -168,7 +171,7 @@ useSeoMeta({
                   :variant="showAggregateTable ? 'solid' : 'outline'"
                   color="purple"
                   @click="showAggregateTable = !showAggregateTable"
-                  class="transition-all duration-200 hover:scale-105"
+                  class="rounded-lg transition-all duration-200 hover:scale-105"
                   :class="showAggregateTable ? 'shadow-md' : ''"
                 >
                   {{ showAggregateTable ? 'View Itemized Details' : 'View Summarized Overview' }}
@@ -177,8 +180,8 @@ useSeoMeta({
             </div>
 
             <!-- Content Description -->
-            <div class="bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-lg p-4 border border-gray-200">
-              <p class="text-gray-700 text-center">
+            <div class="bg-gradient-to-r from-slate-50 to-blue-50/30 rounded-xl p-4 border border-slate-200">
+              <p class="text-slate-700 text-center">
                 <span v-if="showAggregateTable">
                   The table below shows the <span class="font-semibold text-blue-600">summarized</span> number of scores per disease evaluated.
                 </span>
@@ -202,29 +205,26 @@ useSeoMeta({
       </div>
 
       <!-- Quick Stats -->
-      <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <UCard class="text-center bg-blue-50/50">
-          <div class="text-2xl font-bold text-blue-600">{{ tools.length }}</div>
-          <div class="text-sm text-blue-600 font-medium">Total Tools</div>
+      <div class="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">{{ tools.length }}</div>
+          <div class="text-xs text-slate-500">Total Tools</div>
         </UCard>
-        
-        <UCard class="text-center bg-green-50/50">
-          <div class="text-2xl font-bold text-green-600">{{ completedEvals?.length }}</div>
-          <div class="text-sm text-green-600 font-medium">Evaluations</div>
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">{{ completedEvals?.length }}</div>
+          <div class="text-xs text-slate-500">Evaluations</div>
         </UCard>
-        
-        <UCard class="text-center bg-purple-50/50">
-          <div class="text-2xl font-bold text-purple-600">
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">
             {{ countToolSessions.reduce((sum, tool) => sum + tool.totalCompleted, 0) }}
           </div>
-          <div class="text-sm text-purple-600 font-medium">Total Sessions</div>
+          <div class="text-xs text-slate-500">Total Sessions</div>
         </UCard>
-        
-        <UCard class="text-center bg-orange-50/50">
-          <div class="text-2xl font-bold text-orange-600">
+        <UCard class="border-0 shadow-sm bg-slate-50/80 rounded-xl text-center py-3">
+          <div class="text-xl font-semibold text-slate-700">
             {{ countToolSessions.filter(tool => tool.fiveCompleted > 0).length }}
           </div>
-          <div class="text-sm text-orange-600 font-medium">Completed Tools</div>
+          <div class="text-xs text-slate-500">Completed Tools</div>
         </UCard>
       </div>
 
@@ -236,6 +236,7 @@ useSeoMeta({
           variant="outline"
           label="Back to Reports"
           @click="goBack"
+          class="rounded-full px-6"
         />
       </div>
     </UContainer>
@@ -245,10 +246,10 @@ useSeoMeta({
 <style scoped>
 /* Smooth transitions */
 * {
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Custom animations for toggle buttons */
+/* Custom animations for toggle buttons (if needed) */
 .toggle-enter-active,
 .toggle-leave-active {
   transition: all 0.3s ease;

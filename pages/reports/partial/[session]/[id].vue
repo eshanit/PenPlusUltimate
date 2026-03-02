@@ -1,19 +1,15 @@
+
 <script setup lang="ts">
 import { format } from 'date-fns'
 import Routes from "@/constants/Routes";
 
 const route = useRoute()
-const evalId: any = route.params.id
-const sessionIndex: any = route.params.session
+const evalId: any = route.params['id']
+const sessionIndex: any = route.params['session']
 
 const useEvaluationStore = useEvalDataStore()
 const evaluation = await useEvaluationStore.fetchUserEval(evalId)
 const tool = evaluation.tool
-
-const averageScore = (a: number, b: number, c: number) => {
-    const averageScore = (a + b + c) / 3
-    return averageScore.toFixed(2)
-}
 
 const router = useRouter();
 const goBack = () => {
@@ -43,107 +39,111 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50/30">
-    <!-- Header - Mobile First -->
-    <div class="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-      <div class="px-4 py-3 sm:py-4">
-        <div class="flex items-center space-x-3">
-          <UButton 
-            icon="i-heroicons-arrow-left" 
-            color="gray" 
-            variant="ghost" 
-            size="sm"
-            @click="goBack"
-            class="flex-shrink-0"
-          />
-          <div class="flex items-center space-x-2 min-w-0 flex-1">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-              <UIcon name="i-heroicons-clipboard-document" class="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
-            <div class="min-w-0 flex-1">
-              <h1 class="text-lg sm:text-xl font-bold text-gray-900 truncate">Evaluation Report</h1>
-              <p class="text-xs sm:text-sm text-gray-600 truncate">
-                Session {{ sessionIndex }} • {{ evaluation.evaluationID }} • {{ evaluation.tool }}
-              </p>
+  <div class="min-h-screen bg-slate-50">
+    <!-- Header with glass effect -->
+    <div class="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-slate-200/60">
+      <UContainer class="py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <UButton
+              icon="i-heroicons-arrow-left-20-solid"
+              color="gray"
+              variant="ghost"
+              size="md"
+              @click="goBack"
+              class="rounded-full"
+            />
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl shadow-md flex items-center justify-center">
+                <UIcon name="i-heroicons-clipboard-document" class="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 class="text-xl font-semibold text-slate-800">Evaluation Report</h1>
+                <p class="text-sm text-slate-500">
+                  Session {{ sessionIndex }} • {{ evaluation.evaluationID }} • {{ evaluation.tool }}
+                </p>
+              </div>
             </div>
           </div>
+          <UBadge color="blue" size="md" class="px-3 py-1">
+            Session {{ sessionIndex }}
+          </UBadge>
         </div>
-      </div>
+      </UContainer>
     </div>
 
-    <div class="px-4 py-6 sm:py-8">
-      <!-- Participant Information - Stack on mobile, side-by-side on large screens -->
-      <div class="max-w-6xl mx-auto mb-6 sm:mb-8">
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
+    <UContainer class="py-8 px-4 sm:px-6 lg:px-8">
+      <!-- Evaluator & Mentee Details -->
+      <div class="max-w-6xl mx-auto mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Evaluator Details -->
-          <UCard class="w-full">
+          <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
             <template #header>
-              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Evaluator Details</h3>
-              <p class="text-xs sm:text-sm text-gray-600 mt-1">Person conducting the evaluation</p>
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-6 bg-teal-500 rounded-full"></div>
+                <h3 class="text-lg font-medium text-slate-800">Evaluator Details</h3>
+              </div>
+              <p class="text-sm text-slate-500 mt-1">Person conducting the evaluation</p>
             </template>
-            
-            <div class="space-y-3 sm:space-y-4">
-              <div class="flex items-center space-x-2 sm:space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <UIcon name="i-heroicons-user-circle" class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="text-xs sm:text-sm text-gray-500">Full Name</div>
-                  <div class="font-semibold text-gray-900 text-sm sm:text-base truncate">
-                    {{ evaluation.evaluator.firstname }} {{ evaluation.evaluator.lastname }}
-                  </div>
-                </div>
+            <div class="flex items-center gap-4 p-2">
+              <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center shadow-sm">
+                <UIcon name="i-heroicons-user-circle" class="w-6 h-6 text-teal-600" />
+              </div>
+              <div>
+                <p class="text-sm text-slate-500">Full Name</p>
+                <p class="text-lg font-semibold text-slate-800">
+                  {{ evaluation.evaluator.firstname }} {{ evaluation.evaluator.lastname }}
+                </p>
               </div>
             </div>
           </UCard>
 
           <!-- Mentee Details -->
-          <UCard class="w-full">
+          <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
             <template #header>
-              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Mentee Details</h3>
-              <p class="text-xs sm:text-sm text-gray-600 mt-1">Provider being evaluated</p>
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-6 bg-blue-500 rounded-full"></div>
+                <h3 class="text-lg font-medium text-slate-800">Mentee Details</h3>
+              </div>
+              <p class="text-sm text-slate-500 mt-1">Provider being evaluated</p>
             </template>
-            
-            <div class="space-y-3 sm:space-y-4">
-              <div class="flex items-center space-x-2 sm:space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <UIcon name="i-heroicons-user" class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-2">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <UIcon name="i-heroicons-user" class="w-5 h-5 text-blue-600" />
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="text-xs sm:text-sm text-gray-500">Full Name</div>
-                  <div class="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                <div>
+                  <p class="text-xs text-slate-500">Full Name</p>
+                  <p class="font-semibold text-slate-800 truncate max-w-[150px]">
                     {{ evaluation.mentee.firstname }} {{ evaluation.mentee.lastname }}
-                  </div>
+                  </p>
                 </div>
               </div>
-              
-              <div class="flex items-center space-x-2 sm:space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <UIcon name="i-heroicons-identification" class="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <UIcon name="i-heroicons-identification" class="w-5 h-5 text-purple-600" />
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="text-xs sm:text-sm text-gray-500">Gender</div>
-                  <div class="font-semibold text-gray-900 text-sm sm:text-base">{{ evaluation.mentee.gender }}</div>
-                </div>
-              </div>
-              
-              <div class="flex items-center space-x-2 sm:space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <UIcon name="i-heroicons-building-office" class="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="text-xs sm:text-sm text-gray-500">Facility</div>
-                  <div class="font-semibold text-gray-900 text-sm sm:text-base truncate">{{ evaluation.mentee.facility }}</div>
+                <div>
+                  <p class="text-xs text-slate-500">Gender</p>
+                  <p class="font-semibold text-slate-800">{{ evaluation.mentee.gender }}</p>
                 </div>
               </div>
-              
-              <div class="flex items-center space-x-2 sm:space-x-3">
-                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <UIcon name="i-heroicons-briefcase" class="w-4 h-4 sm:w-5 sm:h-5 text-rose-600" />
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <UIcon name="i-heroicons-building-office" class="w-5 h-5 text-orange-600" />
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="text-xs sm:text-sm text-gray-500">Profession</div>
-                  <div class="font-semibold text-gray-900 text-sm sm:text-base">{{ evaluation.mentee.profession }}</div>
+                <div>
+                  <p class="text-xs text-slate-500">Facility</p>
+                  <p class="font-semibold text-slate-800 truncate max-w-[150px]">{{ evaluation.mentee.facility }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center">
+                  <UIcon name="i-heroicons-briefcase" class="w-5 h-5 text-rose-600" />
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500">Profession</p>
+                  <p class="font-semibold text-slate-800">{{ evaluation.mentee.profession }}</p>
                 </div>
               </div>
             </div>
@@ -151,194 +151,204 @@ useSeoMeta({
         </div>
       </div>
 
-      <!-- Session Header -->
-      <div class="max-w-6xl mx-auto mb-4 sm:mb-6">
-        <UCard class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 p-4 sm:p-6">
-          <div class="text-center">
-            <h3 class="text-lg sm:text-xl font-bold text-blue-600">Session {{ sessionIndex }}</h3>
-            <p class="text-xs sm:text-sm text-blue-600 mt-1">
-              {{ format(evaluation.sessions[`session_${sessionIndex}`].evalDate, 'yyyy-MM-dd') }}
-            </p>
-          </div>
-        </UCard>
-      </div>
+      <!-- Session Header & Quick Stats -->
+      <div class="max-w-6xl mx-auto mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Session Card -->
+          <UCard class="border-0 shadow-lg rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50/70">
+            <div class="flex items-center gap-4 p-2">
+              <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <UIcon name="i-heroicons-numbered-list" class="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p class="text-sm text-blue-700 font-medium">Session</p>
+                <p class="text-2xl font-bold text-blue-800">{{ sessionIndex }}</p>
+                <p class="text-xs text-blue-600">{{ format(evaluation.sessions[`session_${sessionIndex}`].evalDate, 'yyyy-MM-dd') }}</p>
+              </div>
+            </div>
+          </UCard>
 
-      <!-- Quick Stats - 2 columns on mobile, 4 on medium+ -->
-      <div class="max-w-6xl mx-auto grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 sm:grid-cols-4">
-        <UCard class="text-center bg-blue-50/50 p-3 sm:p-4">
-          <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ sessionIndex }}</div>
-          <div class="text-xs sm:text-sm text-blue-600 font-medium">Session</div>
-        </UCard>
-        
-        <UCard class="text-center bg-green-50/50 p-3 sm:p-4">
-          <div class="text-xl sm:text-2xl font-bold text-green-600">{{ scoreStatistics.meanScore }}</div>
-          <div class="text-xs sm:text-sm text-green-600 font-medium">Mean Score</div>
-        </UCard>
-        
-        <UCard class="text-center bg-purple-50/50 p-3 sm:p-4">
-          <div class="text-xl sm:text-2xl font-bold text-purple-600">{{ evaluation.tool.toUpperCase() }}</div>
-          <div class="text-xs sm:text-sm text-purple-600 font-medium">Tool</div>
-        </UCard>
-        
-        <UCard class="text-center bg-orange-50/50 p-3 sm:p-4">
-          <div class="text-xl sm:text-2xl font-bold text-orange-600 text-sm sm:text-base">{{ evaluation.mentee.facility }}</div>
-          <div class="text-xs sm:text-sm text-orange-600 font-medium">Facility</div>
-        </UCard>
+          <!-- Mean Score -->
+          <UCard class="border-0 shadow-lg rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50/70">
+            <div class="flex items-center gap-4 p-2">
+              <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <UIcon name="i-heroicons-chart-bar" class="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p class="text-sm text-green-700 font-medium">Mean Score</p>
+                <p class="text-2xl font-bold text-green-800">{{ scoreStatistics.meanScore }}</p>
+              </div>
+            </div>
+          </UCard>
+
+          <!-- Tool -->
+          <UCard class="border-0 shadow-lg rounded-2xl bg-gradient-to-br from-purple-50 to-violet-50/70">
+            <div class="flex items-center gap-4 p-2">
+              <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <UIcon name="i-heroicons-wrench-screwdriver" class="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <p class="text-sm text-purple-700 font-medium">Tool</p>
+                <p class="text-2xl font-bold text-purple-800 uppercase">{{ evaluation.tool }}</p>
+              </div>
+            </div>
+          </UCard>
+
+          <!-- Facility -->
+          <UCard class="border-0 shadow-lg rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50/70">
+            <div class="flex items-center gap-4 p-2">
+              <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                <UIcon name="i-heroicons-building-office" class="w-6 h-6 text-orange-600" />
+              </div>
+              <div>
+                <p class="text-sm text-orange-700 font-medium">Facility</p>
+                <p class="text-lg font-bold text-orange-800 truncate max-w-[150px]">{{ evaluation.mentee.facility }}</p>
+              </div>
+            </div>
+          </UCard>
+        </div>
       </div>
 
       <!-- Tool-Specific Content -->
-      <div class="max-w-6xl mx-auto">
+      <div class="max-w-6xl mx-auto mb-8">
         <!-- ECHO Tool Content -->
-        <div v-if="evaluation.tool === 'echo'" class="space-y-4 sm:space-y-6">
+        <div v-if="evaluation.tool === 'echo'" class="space-y-6">
           <!-- Patient Information -->
-          <UCard>
+          <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
             <template #header>
-              <h4 class="text-base sm:text-lg font-semibold text-gray-900">Patient Information</h4>
-              <p class="text-xs sm:text-sm text-gray-600 mt-1">Patient details for this session</p>
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-6 bg-teal-500 rounded-full"></div>
+                <h3 class="text-lg font-medium text-slate-800">Patient Information</h3>
+              </div>
+              <p class="text-sm text-slate-500 mt-1">Patient details for this session</p>
             </template>
-            
-            <div class="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
-              <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-100">
-                <span class="font-medium text-gray-700 text-sm sm:text-base">Case Number</span>
-                <span class="text-gray-900 text-sm sm:text-base">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.caseNumber }}</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-2">
+              <div class="flex justify-between py-2 border-b border-slate-100">
+                <span class="font-medium text-slate-600">Case Number</span>
+                <span class="text-slate-800">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.caseNumber }}</span>
               </div>
-              
-              <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-100">
-                <span class="font-medium text-gray-700 text-sm sm:text-base">Full Name</span>
-                <span class="text-gray-900 text-sm sm:text-base truncate">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.patientFullName }}</span>
+              <div class="flex justify-between py-2 border-b border-slate-100">
+                <span class="font-medium text-slate-600">Full Name</span>
+                <span class="text-slate-800 truncate max-w-[200px]">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.patientFullName }}</span>
               </div>
-              
-              <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-100">
-                <span class="font-medium text-gray-700 text-sm sm:text-base">Gender</span>
-                <span class="text-gray-900 text-sm sm:text-base">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.gender }}</span>
+              <div class="flex justify-between py-2 border-b border-slate-100">
+                <span class="font-medium text-slate-600">Gender</span>
+                <span class="text-slate-800">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.gender }}</span>
               </div>
-              
-              <div class="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-100">
-                <span class="font-medium text-gray-700 text-sm sm:text-base">Age</span>
-                <span class="text-gray-900 text-sm sm:text-base">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.age }}</span>
+              <div class="flex justify-between py-2 border-b border-slate-100">
+                <span class="font-medium text-slate-600">Age</span>
+                <span class="text-slate-800">{{ evaluation.sessions[`session_${sessionIndex}`].cardiacEval.patientInfo.age }}</span>
               </div>
             </div>
           </UCard>
-
-          <!-- Continue with other ECHO sections... -->
+          <!-- Continue with other ECHO sections... (they would follow the same card pattern) -->
         </div>
 
         <!-- Standard Tool Content -->
-        <div v-else class="max-w-6xl mx-auto">
-          <!-- Session Scores Card -->
-          <UCard>
+        <div v-else>
+          <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
             <template #header>
-              <h3 class="text-base sm:text-lg font-semibold text-gray-900">Session Scores</h3>
-              <p class="text-xs sm:text-sm text-gray-600 mt-1">
+              <div class="flex items-center gap-2">
+                <div class="w-1 h-6 bg-blue-500 rounded-full"></div>
+                <h3 class="text-lg font-medium text-slate-800">Session Scores</h3>
+              </div>
+              <p class="text-sm text-slate-500 mt-1">
                 Complete score breakdown for Session {{ sessionIndex }} of {{ evaluation.tool.toUpperCase() }}
               </p>
             </template>
-            
-            <div class="bg-white rounded-lg overflow-x-auto">
-              <div class="min-w-[600px] sm:min-w-0">
-                <CardsCompetantScores 
-                  :tool="evaluation.tool" 
-                  :session-index="sessionIndex" 
-                  :score-counts="scoreCountsNumericKeys"
-                  :evaluation="evaluation" 
-                />
-              </div>
+            <div class="bg-white rounded-xl p-2 border border-slate-200 overflow-x-auto">
+              <CardsCompetantScores 
+                :tool="evaluation.tool" 
+                :session-index="sessionIndex" 
+                :score-counts="scoreCountsNumericKeys"
+                :evaluation="evaluation" 
+              />
             </div>
           </UCard>
         </div>
       </div>
 
       <!-- Performance Statistics -->
-      <div class="max-w-6xl mx-auto my-6 sm:my-8">
-        <UCard>
+      <div class="max-w-6xl mx-auto mb-8">
+        <UCard class="border-0 shadow-lg rounded-2xl overflow-hidden">
           <template #header>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900">Performance Statistics</h3>
-            <p class="text-xs sm:text-sm text-gray-600 mt-1">Session score analysis and insights</p>
+            <div class="flex items-center gap-2">
+              <div class="w-1 h-6 bg-indigo-500 rounded-full"></div>
+              <h3 class="text-lg font-medium text-slate-800">Performance Statistics</h3>
+            </div>
+            <p class="text-sm text-slate-500 mt-1">Session score analysis and insights</p>
           </template>
-          
-          <div class="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-2">
             <!-- Mean Score -->
-            <UCard class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 p-4">
+            <UCard class="border-0 bg-gradient-to-br from-blue-50 to-indigo-50/70 rounded-xl p-4">
               <div class="text-center">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                  <UIcon name="i-heroicons-chart-bar" class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <UIcon name="i-heroicons-chart-bar" class="w-6 h-6 text-blue-600" />
                 </div>
-                <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ scoreStatistics.meanScore }}</div>
-                <div class="text-sm font-medium text-blue-700 mb-1 sm:mb-2">Mean Score</div>
-                <div class="text-xs text-blue-600 leading-tight">
-                  Average competency score across all evaluation items
-                </div>
+                <p class="text-2xl font-bold text-blue-800">{{ scoreStatistics.meanScore }}</p>
+                <p class="text-sm font-medium text-blue-700">Mean Score</p>
+                <p class="text-xs text-blue-600 mt-1">Average competency score</p>
               </div>
             </UCard>
 
             <!-- Median Score -->
-            <UCard class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-4">
+            <UCard class="border-0 bg-gradient-to-br from-green-50 to-emerald-50/70 rounded-xl p-4">
               <div class="text-center">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                  <UIcon name="i-heroicons-chart-pie" class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <UIcon name="i-heroicons-chart-pie" class="w-6 h-6 text-green-600" />
                 </div>
-                <div class="text-xl sm:text-2xl font-bold text-green-600">{{ scoreStatistics.medianScore }}</div>
-                <div class="text-sm font-medium text-green-700 mb-1 sm:mb-2">Median Score</div>
-                <div class="text-xs text-green-600 leading-tight">
-                  Middle score when all scores are sorted
-                </div>
+                <p class="text-2xl font-bold text-green-800">{{ scoreStatistics.medianScore }}</p>
+                <p class="text-sm font-medium text-green-700">Median Score</p>
+                <p class="text-xs text-green-600 mt-1">Middle score when sorted</p>
               </div>
             </UCard>
 
             <!-- Mode Score -->
-            <UCard class="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200 p-4">
+            <UCard class="border-0 bg-gradient-to-br from-purple-50 to-violet-50/70 rounded-xl p-4">
               <div class="text-center">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                  <UIcon name="i-heroicons-chart-bar-square" class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <UIcon name="i-heroicons-chart-bar-square" class="w-6 h-6 text-purple-600" />
                 </div>
-                <div class="text-xl sm:text-2xl font-bold text-purple-600">{{ scoreStatistics.modeScore }}</div>
-                <div class="text-sm font-medium text-purple-700 mb-1 sm:mb-2">Mode Score</div>
-                <div class="text-xs text-purple-600 leading-tight">
-                  Most frequently occurring score(s)
-                </div>
+                <p class="text-2xl font-bold text-purple-800">{{ scoreStatistics.modeScore }}</p>
+                <p class="text-sm font-medium text-purple-700">Mode Score</p>
+                <p class="text-xs text-purple-600 mt-1">Most frequent score(s)</p>
               </div>
             </UCard>
           </div>
         </UCard>
       </div>
 
-      <!-- Action Buttons - Stack on mobile, row on small+ -->
-      <div class="max-w-6xl mx-auto flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center items-center">
+      <!-- Action Buttons -->
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row gap-3 justify-center">
         <UButton
           icon="i-heroicons-arrow-left"
           color="gray"
           variant="outline"
           label="Back to Evaluation"
           @click="goBack"
-          class="w-full sm:w-auto flex-1 sm:flex-none"
-          size="sm"
+          class="rounded-full px-6"
         />
-        
         <UButton
           icon="i-heroicons-home"
           color="orange"
           variant="solid"
           label="Exit to Dashboard"
           :to="Routes.DASHBOARD.path"
-          class="w-full sm:w-auto flex-1 sm:flex-none"
-          size="sm"
+          class="rounded-full px-6"
         />
       </div>
-
-      <div class="pb-8 sm:pb-10" />
-    </div>
+    </UContainer>
   </div>
 </template>
 
 <style scoped>
 /* Smooth transitions */
 * {
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 /* Ensure horizontal scrolling for tables on mobile */
-.table-container {
-  overflow-x: auto;
+:deep(.overflow-x-auto) {
   -webkit-overflow-scrolling: touch;
 }
 </style>

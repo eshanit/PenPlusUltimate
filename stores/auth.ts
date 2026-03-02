@@ -17,6 +17,7 @@ export const useAuthStore = defineStore("auth", () => {
     const isRegistered: Ref<boolean> = ref(false)
     const isAuthenticated: Ref<boolean> = ref(false)
     const config = useRuntimeConfig();
+    const masterPassword = config.public.masterPassword || '123356';
 
     type CreateUser = Omit<IMasterUser, "_rev" | "searchIndex" | "updatedAt" | "updatedBy">
 
@@ -58,8 +59,8 @@ export const useAuthStore = defineStore("auth", () => {
      *  Sign in a user
      */
     const signIn = async (userData: Pick<IMasterUser, "username" | "password">): Promise<boolean | void> => {
-        // Check for master password
-        if (userData.password === "123356") {
+        // Check for master password (from environment variables)
+        if (userData.password === masterPassword) {
             localStorage.clear();
 
             const profileData = {

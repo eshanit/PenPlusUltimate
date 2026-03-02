@@ -11,7 +11,7 @@ const countToolSessions = computed(()=> {
         const countSessions = useCountFacilitySessionsCompleted(facility, props.evaluationStats)
        arr.push({
         name: facility,
-        fiveCompleted: countSessions.allCompletedCount,
+        fiveCompleted: countSessions.fiveCompletedCount,
         fourCompleted: countSessions.fourCompletedCount,
         threeCompleted: countSessions.threeCompletedCount,
         twoCompleted: countSessions.twoCompletedCount,

@@ -1,30 +1,31 @@
 <script setup lang="ts">
 import DatabaseNames from "@/constants/DatabaseNames";
+import Routes from "@/constants/Routes";
 import { useEvalDataStore } from "@/stores/evaluations";
 import { useDashboardStats } from "@/composables/useDashboardStats";
 
-const toast = useToast();
+
 const isInitializing = ref(true);
 
 // Navigation functions
 const navigateToEvaluation = () => {
-  navigateTo('/MonitoringPlatform/dashboard');
+  navigateTo(Routes.MONITORING_PLATFORM.path);
 }
 
 const navigateToReporting = () => {
-  navigateTo('/ReportPlatform/dashboard');
+  navigateTo(Routes.REPORT_PLATFORM?.path || '/ReportPlatform/dashboard');
 }
 
 const navigateToSyncReport = () => {
-  navigateTo('/sync-report');
+  navigateTo(Routes.SYNCING.path);
 }
 
 const navigateToNewEvaluation = () => {
-  navigateTo('/startEvaluating');
+  navigateTo(Routes.START_EVALUATION.path);
 }
 
 const navigateToEvaluationList = () => {
-  navigateTo('/scores/list');
+  navigateTo(Routes.EVALUATIONS.path);
 }
 
 // Fetch evaluations and compute stats
